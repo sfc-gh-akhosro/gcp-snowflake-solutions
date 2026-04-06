@@ -1,0 +1,19 @@
+skill_name: "snowflake-managed-iceberg-on-gcp"
+skill_type: "external"
+promotion_stage: "draft"
+
+validation:
+  testers:
+    count: 1
+    names:
+      - "Ali Khosro"
+
+evidence_links:
+  - https://github.com/Snowflake-Solutions/pse-csp/tree/main/GCP/projects/snowflake-managed-iceberg-on-gcp
+
+notes: |
+  Share Snowflake data with VertexAI and GCP services through Iceberg V3 tables.
+  - Use case: Snowflake is main engine, GCP services need read/write access
+  - Key feature: Native VARIANT, OBJECT, and MAP column support with Iceberg V3 with performance measures
+  - External reader: PySpark 4
+  - Tested on: QN43380 (SFSENORTHAMERICA) with GCS bucket
