@@ -1,0 +1,20 @@
+skill_name: "ge-cortex-agent-via-rest"
+skill_type: "external"
+promotion_stage: "draft"
+
+validation:
+  testers:
+    count: 1
+    names:
+      - "Ali Khosro"
+
+evidence_links:
+  - https://github.com/Snowflake-Solutions/pse-csp/tree/main/GCP/projects/gemini-enterprise-calls-cortex/via-REST
+
+notes: |
+  Connect Gemini Enterprise to Snowflake Cortex Agent via REST API using Vertex AI Agent Engine (ADK).
+  - Use case: Business analysts ask natural-language questions in GE, get answers from Snowflake data
+  - Architecture: GE → Agent Engine (gemini-2.5-flash) → Cortex Agent :run REST API (PAT auth) → Semantic View → Data
+  - Key findings: GE Custom Actions deprecated, GE OAuth has response_type bug, MCP protocol mismatch
+  - Working path: ADK Agent on Agent Engine with PAT baked into pickle
+  - Tested on: QN43380 (SFSENORTHAMERICA) with GCP project snowflake-corp-pse-poc
