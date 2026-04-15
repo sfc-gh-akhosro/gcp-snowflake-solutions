@@ -8,24 +8,71 @@ This is the full, self-contained guide. Every code block is inline — no extern
 
 ---
 
+## Environments
+
+This POC uses **3 environments**. Open each in a separate browser tab:
+
+| # | Environment | Link | Used for |
+|---|-------------|------|----------|
+| 1 | **GCP Cloud Shell** | [console.cloud.google.com/cloudshell →](https://console.cloud.google.com/cloudshell?project=snowflake-corp-pse-poc) | All bash/Python commands (bucket creation, gcloud, pip, agent deployment) |
+| 2 | **Snowsight** | [app.snowflake.com →](https://app.snowflake.com/qn43380.us-central1.gcp/) | SQL, Iceberg table, semantic view, agent, PAT |
+| 3 | **Google Admin Console** | [admin.google.com →](https://admin.google.com/ac/apps/gmail/gemini/agents) | Register agent in Gemini Enterprise |
+
+**Result — 2 URLs to test:**
+
+| What | URL |
+|------|-----|
+| Snowflake Intelligence (Cortex Agent) | [app.snowflake.com →](https://app.snowflake.com/qn43380.us-central1.gcp/) AI & ML → Agents → NY_WEATHER_AGENT |
+| Gemini Enterprise web chat | [gemini.google.com →](https://gemini.google.com) |
+
+---
+
 ## Architecture
 
 ```mermaid
 flowchart LR
-    A[(Weather Data)] -->|0a| B[Cortex Analyst\nSemantic View]
-    B -->|0b| C[Cortex Agent]
-    C -->|0c| D[Agent Engine\nVertex AI ADK]
-    E[Snowflake PAT] -->|0d| D
-    D -->|1, 2| F[Gemini\nEnterprise]
-    F -->|3| G((User Asks\nQuestion))
+    subgraph GCS["Customer GCS Bucket"]
+        Z["1. Create Customer\nGCS Bucket"]
+    end
 
-    click A href "#0a-get-weather-data"
-    click B href "#0b-create-cortex-analyst-semantic-view"
-    click C href "#0c-create-cortex-agent"
-    click E href "#0d-create-programmatic-access-token-pat"
-    click D href "#2b-deploy-the-adk-agent"
-    click F href "#3a-create-agent-in-ge-admin-console"
-    click G href "#3b-end-to-end-test"
+    subgraph SF["Snowflake"]
+        Y["2. External Volume"]
+        A[("3. Weather Data\nIceberg")]
+        B["4. Semantic View"]
+        C["5. Cortex Agent"]
+        E["6. PAT"]
+        T["7. REST API\nTest"]
+    end
+
+    subgraph GCP["GCP Services"]
+        D["8. Agent Engine\nVertex AI ADK"]
+        F["9. Gemini\nEnterprise"]
+    end
+
+    Z --> Y
+    Y --> A
+    A --> B
+    B --> C
+    E --> T
+    C --> T
+    T --> D
+    D --> F
+    F --> G(("10. Ask a\nQuestion"))
+
+    style GCS fill:#bbffff40
+    style SF fill:#bbffbb40
+    style GCP fill:#ffffbb40
+
+    click Z href "#step-1-create-customer-gcs-bucket-for-iceberg-tables"
+    click Y href "#step-2-create-external-volume-pointing-to-the-bucket"
+    click A href "#step-3-get-weather-data-iceberg"
+    click B href "#step-4-create-cortex-analyst-semantic-view"
+    click C href "#step-5-create-cortex-agent"
+    click E href "#step-6-create-programmatic-access-token-pat"
+    click T href "#step-7a-test-with-curl"
+    click D href "#step-8b-deploy-the-adk-agent"
+    click F href "#step-9a-create-agent-in-ge-admin-console"
+    click G href "#step-10-end-to-end-test"
 ```
 
 ## Variables
@@ -42,23 +89,84 @@ flowchart LR
 | `AGENT_SCHEMA` | `ai` |
 | `SEMANTIC_VIEW` | `WEATHER_MAN` |
 | `USER_ROLE` | `POC` |
+| `ICEBERG_BUCKET` | `snowflake-corp-pse-poc-iceberg` |
+| `EXTERNAL_VOLUME` | `my_gcs_iceberg_vol` |
 | `AGENT_RUN_ENDPOINT` | `/api/v2/databases/poc/schemas/ai/agents/NY_WEATHER_AGENT:run` |
 
 ---
 
-# Part 0: Snowflake Prerequisites
+# Part 1: GCS Infrastructure (Customer's GCP Account)
 
-## 0a. Get Weather Data
+## Step 1. Create Customer GCS Bucket for Iceberg Tables
+
+[Open GCS Console →](https://console.cloud.google.com/storage/browser?project=snowflake-corp-pse-poc)
+
+Create via CLI or the console link above:
+
+```bash
+gsutil mb -l us-central1 -p snowflake-corp-pse-poc gs://snowflake-corp-pse-poc-iceberg
+```
+
+This bucket stores Iceberg table data (Parquet files + metadata). Snowflake manages the catalog; you own the storage.
+
+## Step 2. Create External Volume Pointing to the Bucket
+
+Requires ACCOUNTADMIN or SYSADMIN.
+
+```sql
+USE ROLE ACCOUNTADMIN;
+
+CREATE OR REPLACE EXTERNAL VOLUME my_gcs_iceberg_vol
+  STORAGE_LOCATIONS = (
+    (
+      NAME = 'gcs-iceberg'
+      STORAGE_BASE_URL = 'gcs://snowflake-corp-pse-poc-iceberg/'
+      STORAGE_PROVIDER = 'GCS'
+    )
+  )
+  ALLOW_WRITES = TRUE;
+
+DESCRIBE EXTERNAL VOLUME my_gcs_iceberg_vol;
+```
+
+From the `DESCRIBE` output, copy the `STORAGE_GCP_SERVICE_ACCOUNT` value and grant it **Storage Object Admin** on the bucket via CLI or [IAM Console →](https://console.cloud.google.com/iam-admin/iam?project=snowflake-corp-pse-poc):
+
+```bash
+gsutil iam ch serviceAccount:<SERVICE_ACCOUNT>:roles/storage.objectAdmin gs://snowflake-corp-pse-poc-iceberg
+```
+
+---
+
+# Part 2: Snowflake Prerequisites
+
+## Step 3. Get Weather Data (Iceberg)
 
 1. Snowflake Marketplace → search **"Weather Source LLC - Frostbyte"** → get the listing
 2. It creates database `WEATHER_SOURCE_LLC_FROSTBYTE` with view `ONPOINT_ID.HISTORY_DAY`
-3. Create a filtered table for NY daily weather:
+3. Create a filtered Iceberg table for NY daily weather:
 
 ```sql
+USE ROLE POC;
+
 CREATE DATABASE IF NOT EXISTS poc;
 CREATE SCHEMA IF NOT EXISTS poc.weather;
 
-CREATE OR REPLACE TABLE poc.weather.ny_daily AS
+CREATE OR REPLACE ICEBERG TABLE poc.weather.ny_daily (
+    postal_code                    VARCHAR,
+    country                        VARCHAR,
+    date_valid_std                 DATE,
+    avg_temperature_air_2m_f       FLOAT,
+    avg_humidity_relative_2m_pct   FLOAT,
+    avg_wind_speed_10m_mph         FLOAT,
+    tot_precipitation_in           FLOAT,
+    tot_snowfall_in                FLOAT,
+    avg_cloud_cover_tot_pct        FLOAT
+)
+    EXTERNAL_VOLUME = 'my_gcs_iceberg_vol'
+    CATALOG = 'SNOWFLAKE'
+    BASE_LOCATION = 'poc/weather/ny_daily/';
+
+INSERT INTO poc.weather.ny_daily
 SELECT postal_code, country, date_valid_std,
        avg_temperature_air_2m_f, avg_humidity_relative_2m_pct,
        avg_wind_speed_10m_mph, tot_precipitation_in,
@@ -74,9 +182,9 @@ SELECT COUNT(*) FROM poc.weather.ny_daily;
 SELECT * FROM poc.weather.ny_daily LIMIT 5;
 ```
 
-## 0b. Create Cortex Analyst Semantic View
+## Step 4. Create Cortex Analyst Semantic View
 
-1. Snowsight → **AI & ML** → **Cortex Analyst** → **Create Semantic View**
+1. [Open Snowsight →](https://app.snowflake.com/qn43380.us-central1.gcp/) **AI & ML** → **Cortex Analyst** → **Create Semantic View**
 2. Select table `POC.WEATHER.NY_DAILY`, name it `POC.AI.WEATHER_MAN`
 3. Review generated column descriptions and save
 
@@ -87,9 +195,9 @@ USE ROLE POC;
 SHOW SEMANTIC VIEWS IN SCHEMA poc.ai;
 ```
 
-## 0c. Create Cortex Agent
+## Step 5. Create Cortex Agent
 
-1. Snowsight → **AI & ML** → **Cortex Agents** → **Create Agent**
+1. [Open Snowsight →](https://app.snowflake.com/qn43380.us-central1.gcp/) **AI & ML** → **Cortex Agents** → **Create Agent**
 2. Name: `NY_WEATHER_AGENT`, Database: `POC`, Schema: `AI`
 3. Add tool: **Cortex Analyst** → select `WEATHER_MAN` semantic view
 4. Add sample questions: "What was the hottest day in 2021?", "What was the average temperature in January 2020?"
@@ -103,13 +211,13 @@ SHOW AGENTS IN SCHEMA poc.ai;
 DESCRIBE AGENT poc.ai.NY_WEATHER_AGENT;
 ```
 
-Optional — test in Snowsight UI: go to **AI & ML** → **Agents** → **NY_WEATHER_AGENT** → ask "What was the hottest day in 2021?" → expect June 29, 2021, 87.9°F.
+Optional — test in [Snowsight UI](https://app.snowflake.com/qn43380.us-central1.gcp/): go to **AI & ML** → **Agents** → **NY_WEATHER_AGENT** → ask "What was the hottest day in 2021?" → expect June 29, 2021, 87.9°F.
 
 > **Note:** There is no SQL function to call a Cortex Agent — it is only accessible via REST API or Snowsight UI.
 
-## 0d. Create Programmatic Access Token (PAT)
+## Step 6. Create Programmatic Access Token (PAT)
 
-1. Snowsight → **user avatar** (bottom left) → **Profile** → **Programmatic Access Tokens**
+1. [Open Snowsight →](https://app.snowflake.com/qn43380.us-central1.gcp/) **user avatar** (bottom left) → **Profile** → **Programmatic Access Tokens**
 2. **+ Generate New Token**
    - Comment: `GE REST API POC`
    - Role: `POC`
@@ -119,11 +227,11 @@ Optional — test in Snowsight UI: go to **AI & ML** → **Agents** → **NY_WEA
 
 ---
 
-# Part 1: Test Cortex Agent REST API
+# Part 3: Test Cortex Agent REST API
 
 Before deploying to Agent Engine, verify the REST API works directly.
 
-## 1a. Test with curl
+## Step 7a. Test with curl
 
 ```bash
 SNOWFLAKE_ACCOUNT_URL="https://qn43380.us-central1.gcp.snowflakecomputing.com"
@@ -152,7 +260,7 @@ curl -X POST "${SNOWFLAKE_ACCOUNT_URL}${AGENT_RUN_ENDPOINT}" \
 
 **Expected:** HTTP 200 with JSON containing "June 29, 2021" and "87.9°F".
 
-## 1b. Test with Python
+## Step 7b. Test with Python
 
 ```bash
 pip install requests
@@ -192,9 +300,11 @@ else:
 
 ---
 
-# Part 2: Deploy Agent to Vertex AI Agent Engine
+# Part 4: Deploy Agent to Vertex AI Agent Engine
 
-## 2a. GCP Prerequisites
+## Step 8a. GCP Prerequisites
+
+[Open Cloud Shell →](https://console.cloud.google.com/cloudshell?project=snowflake-corp-pse-poc) or run locally:
 
 ```bash
 gcloud auth application-default login --project=snowflake-corp-pse-poc
@@ -203,10 +313,10 @@ gsutil mb -l us-central1 -p snowflake-corp-pse-poc gs://snowflake-corp-pse-poc-a
 pip install google-adk google-cloud-aiplatform requests
 ```
 
-## 2b. Deploy the ADK Agent
+## Step 8b. Deploy the ADK Agent
 
 ```bash
-export SNOWFLAKE_PAT="<your PAT from step 0d>"
+export SNOWFLAKE_PAT="<your PAT from step 6>"
 ```
 
 ```python
@@ -287,13 +397,13 @@ print(f"\nResource name: {remote_agent.resource_name}")
 print("Use this in GE Admin Console -> Agent Engine")
 ```
 
-Deployment takes 3-8 minutes. Note the **Resource name** — you need it for step 3.
+Deployment takes 3-8 minutes. Note the **Resource name** — you need it for step 9.
 
 > **Important:** The PAT is captured from the `SNOWFLAKE_PAT` env var at deploy time via `cloudpickle` and baked into the deployed agent. It is available inside the Agent Engine container at runtime. No Secret Manager needed for POC.
 
 > **Important:** `staging_bucket` must be passed to **both** `aiplatform.init()` and `vertexai.init()` — omitting either causes silent failures.
 
-## 2c. Verify Deployed Agent
+## Step 8c. Verify Deployed Agent
 
 ### List deployed agents
 
@@ -330,9 +440,9 @@ else:
 
 **Expected:** Answer containing "June 29, 2021" and "87.9°F".
 
-If you get an IP-related error, proceed to step 2d.
+If you get an IP-related error, proceed to step 8d.
 
-## 2d. Whitelist Agent Engine IP in Snowflake (if needed)
+## Step 8d. Whitelist Agent Engine IP in Snowflake (if needed)
 
 Agent Engine egress IPs are **not** in standard GCP ranges (34.x/35.x). They come from ranges like `136.124.x.x`. When the agent is blocked, the error message contains the blocked IP.
 
@@ -348,33 +458,31 @@ ALTER NETWORK POLICY <YOUR_POLICY>
 
 Replace `<IP>` with the IP from the error and `<YOUR_POLICY>` with your account's network policy (e.g. `ACCOUNT_VPN_POLICY_SE`).
 
-Then re-run the verify step (2c).
+Then re-run the verify step (8c).
 
 > **Note:** If your account has an automated network policy task (like a security team's `CREATE OR REPLACE NETWORK POLICY` on a schedule), your rule will be wiped on each run. See `plan.md` for workarounds.
 
 ---
 
-# Part 3: Register in Gemini Enterprise
+# Part 5: Register in Gemini Enterprise
 
-## 3a. Create Agent in GE Admin Console
+## Step 9a. Create Agent in GE Admin Console
 
-1. Go to [Google Admin Console](https://admin.google.com)
+1. Go to [Google Admin Console →](https://admin.google.com/ac/apps/gmail/gemini/agents)
 2. Navigate to **Apps** → **Google Workspace** → **Gemini** → **Agents**
 3. Click **Create Agent** → select **Agent Engine (Vertex AI)**
-4. **Reasoning Engine source:** paste the resource name from step 2b
+4. **Reasoning Engine source:** paste the resource name from step 8b
    ```
    projects/138540327209/locations/us-central1/reasoningEngines/<YOUR_ID>
    ```
-5. **Skip Agent Authorization** — OAuth is NOT needed (PAT is baked into the agent)
+5. **Skip Agent Authorization** (PAT is baked into the agent)
 6. Set **Name** and **Description**
 7. Go to **User Permissions** tab → add yourself and/or your org
 8. **Save**
 
-> **Why skip OAuth?** GE sends the OAuth authorize redirect without `response_type=code` (required by RFC 6749). Snowflake rejects it. This is a confirmed GE-side bug. The deployed agent handles Snowflake auth internally via the baked-in PAT, so GE Agent Authorization is unnecessary. See `oauth-test.md` for the standalone proof.
+## Step 10. End-to-End Test
 
-## 3b. End-to-End Test
-
-Open **gemini.google.com** or the Gemini side panel in any Google Workspace app.
+Open [gemini.google.com →](https://gemini.google.com) or the Gemini side panel in any Google Workspace app.
 
 | # | Question | Expected Answer |
 |---|----------|-----------------|
@@ -396,7 +504,7 @@ If GE doesn't auto-route to your agent, try **@your-agent-name What was the hott
 | `403 Not Authorized` | Role lacks `SNOWFLAKE.CORTEX_USER` or `USAGE` on agent |
 | `404 Not Found` | Check endpoint URL — database, schema, agent name are case-sensitive |
 | `400 missing execution environment` | Agent needs a warehouse. Run: `ALTER USER <user> SET DEFAULT_WAREHOUSE = 'COMPUTE_WH'` or add `execution_environment` to agent spec |
-| IP blocked by network policy | Extract IP from error, whitelist with network rule (step 2d) |
+| IP blocked by network policy | Extract IP from error, whitelist with network rule (step 8d) |
 
 ## Agent Engine Errors
 
@@ -414,20 +522,6 @@ If GE doesn't auto-route to your agent, try **@your-agent-name What was the hott
 |-------|----------|
 | GE shows "thinking" then nothing | Check Agent Engine logs for model or network errors |
 | GE doesn't route to agent | Try `@agent-name <question>` or check User Permissions |
-| OAuth `response_type` error | Known GE bug — skip Agent Authorization entirely |
-
----
-
-# What Did NOT Work
-
-| Approach | Issue |
-|----------|-------|
-| **MCP** | Snowflake MCP uses JSON-RPC/HTTPS; GE expects Streamable HTTP — incompatible protocols |
-| **GE Custom Actions** | Deprecated March 2026 — UI redirects to data connectors that don't support arbitrary REST |
-| **GE Agent Authorization (OAuth)** | GE omits `response_type=code` in OAuth redirect; Snowflake rejects it. Not needed anyway |
-| **`gemini-2.0-flash` model** | 404 in the GCP project — use `gemini-2.5-flash` instead |
-
-See `feasibility-study.md` for the full comparison matrix.
 
 ---
 
@@ -448,7 +542,7 @@ for engine in agent_engines.list():
 
 ## Revoke PAT
 
-Snowsight → Profile → Programmatic Access Tokens → Delete the POC token.
+[Open Snowsight →](https://app.snowflake.com/qn43380.us-central1.gcp/) Profile → Programmatic Access Tokens → Delete the POC token.
 
 ## Remove Network Rule
 
@@ -461,4 +555,4 @@ DROP NETWORK RULE ADMIN_DB.NETWORK.AGENT_ENGINE_RULE;
 
 ## Deactivate GE Agent
 
-GE Admin Console → Agents → Deactivate or delete the agent.
+[GE Admin Console →](https://admin.google.com/ac/apps/gmail/gemini/agents) Agents → Deactivate or delete the agent.

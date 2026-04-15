@@ -21,6 +21,30 @@ Evaluate how Gemini Enterprise (GE) can call a Snowflake Cortex Agent to query e
 
 ---
 
+## Why REST Architecture (and Not Something Else)
+
+We evaluated four approaches. Only one works today:
+
+| Approach | Result | Why |
+|----------|--------|-----|
+| **MCP** | Failed | Snowflake MCP uses JSON-RPC/HTTPS; GE expects Streamable HTTP — incompatible protocols |
+| **GE Custom Actions (OpenAPI)** | Failed | Deprecated March 2026. GE Admin Console no longer supports arbitrary REST endpoints |
+| **GE Agent Authorization (OAuth)** | Failed | GE omits `response_type=code` in OAuth redirect — confirmed GE-side bug. Snowflake OAuth works independently (see `oauth-test.md`) |
+| **ADK Agent on Agent Engine** | **Works** | Native GE integration, single Python deploy script, PAT auth, ~1 day effort |
+
+Full analysis with comparison matrix: `feasibility-study.md`
+Product team report on issues found: `integration-report.md`
+
+## Key Discoveries
+
+1. **GE Custom Actions are gone** — replaced by pre-built data connectors (BigQuery, Drive, etc.) with no generic REST option
+2. **GE OAuth is buggy** — the authorize redirect is missing `response_type=code` (required by OAuth 2.0 / RFC 6749). We proved this independently (`oauth-test.md`)
+3. **Agent Engine egress IPs are not standard GCP IPs** — they come from `136.124.x.x`, not the usual `34.x/35.x` ranges. You must discover the IP from error logs and add it to Snowflake's network policy
+4. **PAT baked into pickle works** — the `SNOWFLAKE_PAT` env var is captured by `cloudpickle` at deploy time and available inside the Agent Engine container
+5. **Two LLM hops add latency** — gemini-2.5-flash (Agent Engine orchestration) + Cortex Agent's internal LLM = ~20s per query
+6. **`staging_bucket` must be passed to both** `aiplatform.init()` and `vertexai.init()` or deployment fails silently
+
+
 ## Failed Approaches (in order of attempt)
 
 ### 1. MCP — Protocol Incompatibility

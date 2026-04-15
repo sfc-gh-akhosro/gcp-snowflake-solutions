@@ -1,0 +1,113 @@
+Welcome. Before we jump into the demo, lets take a step back and look at the big picture of Snowflakes A I offering, called Cortex Platform.
+
+Think of it as a layered architecture, flowing left to right. On the far left, we have external data sources. These are the systems where your data already lives. It could be streaming data from Kafka or Pub Sub. It could be O L T P databases like Spanner or Snowflake Postgres. It could be unstructured data from G C S, Slack, Google Workspace, and other sources. And of course, the Snowflake Marketplace, where you can get ready to use third party datasets. To bring all of this into Snowflake, we have connectors. Native connectors for direct ingestion, Open Flow for streaming data, and Apache Iceberg for open table formats with remote catalog support, so you can keep data in your own cloud storage while Snowflake manages it.
+
+Moving to the right, we reach the data layer. This supports structured data like tables and views, Iceberg tables for open format storage, and unstructured data like P D Fs, images, and documents.
+
+Next is the semantic layer. This is where Cortex A I capabilities live, and they are all powered by Googles newest Gemini models. A I Functions like classify, extract, sentiment, and summarize let you apply large language models directly inside S Q L queries. Cortex Analyst understands structured data through semantic views and translates natural language questions into S Q L. Cortex Search enables semantic search across your data. And Document A I processes and extracts information from unstructured files.
+
+Continuing to the right is the orchestration layer. This is where Cortex Agents live, also powered by Gemini. An agent can combine multiple tools, like Cortex Analyst for structured data and Cortex Search for unstructured data, and reason over them to answer complex questions.
+
+And finally on the far right, we have the application layer. This is how users and systems interact with everything to the left. There is Vertex A I for building and deploying agents programmatically. Cortex Code for developers working directly in Snowflake. And chat interfaces like Gemini Enterprise, Snowflake Intelligence, and Slack, where business users ask questions in natural language.
+
+Now, an important point about the models. Cortex Analyst, Cortex Agents, and A I Functions are all powered by Googles newest Gemini models. Gemini is the default L L M for G C P accounts, and it is also available as an option for our customers running on other clouds.
+
+And here is why running A I through Cortex is a game changer compared to other approaches.
+
+First, accuracy. Cortex Analyst and Cortex Agents have full visibility into your metadata, your query history, your table relationships, and your business logic. They use adaptive semantic views that continuously learn how your organization talks about its data. This means the answers get more accurate over time. Our customers consistently report significantly less hallucination compared to general purpose L L M approaches, and that accuracy is critical when you are making business decisions based on A I answers.
+
+Second, security. Your data never leaves Snowflake. Only the insights, the answers, travel to the end application. Whether the user is in Gemini Enterprise, Snowflake Intelligence, or Slack, the raw data stays where it is. No copies, no extracts, no exposure. This is a fundamentally more secure architecture.
+
+Third, cost and performance. Because data does not move, you avoid expensive data transfer and egress charges. The compute happens right next to the data inside Snowflake, which also makes it faster. Less data movement means lower cost, better security, and faster responses, all at the same time.
+
+So thats the full Cortex Platform. External data flows in from the left, gets organized in the data layer, gets understood through the semantic layer, gets orchestrated by agents, and gets exposed through applications on the right.
+
+Now, in this demo, we are going to focus on one specific end to end flow through these layers.
+
+We start by getting weather data from the Snowflake Marketplace. We store it as an Iceberg table in the customers own G C S bucket. Then we move through the Cortex layers. We create a Cortex Analyst semantic view so the platform understands the data in business terms. We create a Cortex Agent that uses the semantic view as a tool to answer questions. We then expose this agent to two chat interfaces. First, Snowflake Intelligence, which is Snowflakes built in chat experience. And second, Gemini Enterprise, which we integrate by building an agent in Googles Vertex A I Agent Engine using the A D K framework.
+
+By the end, a business user can ask a plain English question in either Snowflake Intelligence or Gemini Enterprise and get an answer from Snowflake data, without writing any S Q L.
+
+Lets get started.
+
+Lets look at the architecture diagram. It has three color coded sections.
+
+On the left, in blue, is the customers G C S bucket. This is where Iceberg table data is stored. Snowflake reads and writes to this bucket through an external volume.
+
+In the middle, in green, is Snowflake. This is where we create the external volume, the Iceberg table with weather data, a semantic view that describes the data in business terms, the Cortex Agent that answers questions, and a P A T token for authentication. We also test the REST A P I here before deploying.
+
+On the right, in yellow, are the G C P services. The Vertex A I Agent Engine hosts our deployed agent, and Gemini Enterprise is where end users interact with it.
+
+The flow goes left to right. Data lives in the customer bucket, Snowflake manages and queries it, and G C P services expose it to Gemini users.
+
+There are ten steps in total. Lets walk through each one.
+Please follow the demo.md or quickstart.md (the longer version with troubleshouting). We will need two python files to deploy our agent and to verify it.
+- deploy_agent.py 
+- verify_agent.py 
+We will run these two in google cloud shell.
+
+
+Step 1. Create Customer G C S Bucket.
+
+First, we create a G C S bucket in the customers project. This bucket will store the Iceberg table data. We run a two commands in Cloud Shell to authenticate ourselve through browser and then create a bucket in gcp's customer tenant.
+Open google cloud shell (or your local terminal) and run two commands.
+
+
+Step 2. Create External Volume.
+
+Next, in Snowflake, we create an external volume that points to that bucket. This tells Snowflake where to read and write Iceberg data. After creating it, we grab the service account from the output and grant it storage permissions on the bucket.
+
+Step 3. Get Weather Data as Iceberg Table.
+
+Now we need some data. We go to the Snowflake Marketplace and get the Weather Source Frostbyte listing. This gives us historical weather data. Then we create an Iceberg table and load New York daily weather data into it, filtered from the marketplace dataset.
+
+Before going ahead. let's review and confirm:
+- we created an iceberg table in customer (our) GCS bucket and then populated it with weather data.
+- Let's see sample of data from iceberg table.
+- Let's go to gcs bucket (as a customer) and see what we have.
+
+Step 4. Create Cortex Analyst Semantic View.
+
+With the data in place, we create a semantic view. In Snowsight, we go to A I and M L, then Cortex Analyst, and create a new semantic view over our weather table. Snowflake automatically generates column descriptions. We review them and save.
+
+Step 5. Create Cortex Agent.
+
+Now we create a Cortex Agent. Again in Snowsight, under A I and M L, we go to Cortex Agents and create a new one. We name it N Y Weather Agent, attach the semantic view as a tool, add a couple of sample questions, and save.
+
+Now we have created source tables, semantic view in Cortex Analyst, and define an agent which uses this analyst as a tool to call and get weather insight.
+
+Right away, we have it ready for Snowflake Intelligence. Your employees can use it. Let's see and ask a question. 
+For this agent to be available for Gemini Enteprise, we need a bit more work that follows.
+
+
+
+Step 6. Create Programmatic Access Token.
+
+The agent needs authentication. We go to the user profile in Snowsight and generate a Programmatic Access Token, or P A T. We set the role to P O C, give it a thirty day expiration, and copy the token.
+
+
+Step 7. Test the REST A P I.
+
+Before deploying anywhere, we test the agent directly. We send a curl request to the Cortex Agent REST A P I with our question, what was the hottest day in 2021. We authenticate using the P A T token. The response should come back with June 29, 2021, at 87.9 degrees Fahrenheit.
+
+Step 8. Deploy Agent to Vertex A I.
+
+Now we deploy. In Cloud Shell, we install the required Python packages, enable the A I Platform A P I, and create a staging bucket. Then we set our P A T as an environment variable and run the deploy script. This packages our agent and deploys it to Vertex A I Agent Engine. We note the resource I D from the output.
+
+After deployment, we run the verify script to confirm the agent works end to end from Agent Engine. If it fails with an I P error, we add a network rule in Snowflake to whitelist the Agent Engine I P, then verify again.
+
+The deployment of our snwoflake agent engine to Vertex AI will take a few minutes time so we cut and just show the result.
+
+
+Step 9. Register in Gemini Enterprise.
+
+Almost there. We open the Google Admin Console, go to Gemini Enterprise, select our chat app, and create a new agent of type Agent Engine. We paste the resource path from the previous step. Our agent handles Snowflake authentication internally using the P A T. Then we add ourselves to User Permissions and save.
+
+Step 10. Ask a Question.
+
+And now the moment of truth. We open Gemini Enterprise and type, what was the hottest day in 2021. Gemini routes the question to our agent, which calls the Cortex Agent REST A P I, which queries Snowflake, and returns the answer. June 29, 2021, 87.9 degrees Fahrenheit.
+
+You can also see that I snowflake-weather-agent is registered as an agent in gemini enteprise and it is selectable as a tool.
+
+
+Thats it. Natural language questions in Gemini Enterprise, answered by Snowflake data, with no S Q L required from the user.
