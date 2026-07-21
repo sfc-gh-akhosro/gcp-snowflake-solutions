@@ -1,110 +1,165 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="656pt" height="255pt" viewBox="0.00 0.00 656.00 255.00">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(28.8 226.5)">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="904pt" height="332pt" viewBox="0.00 0.00 904.00 332.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(28.8 302.8)">
 <title>cortex_stack</title>
-<g id="clust3" class="cluster">
+<g id="clust1" class="cluster">
+<title>cluster_data</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="8,-8 8,-266 170.21,-266 170.21,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="89.11" y="-249.4" font-family="Helvetica,sans-Serif" font-size="14.00">Extract</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_exploration</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="191.21,-30 191.21,-258 337.05,-258 337.05,-30 191.21,-30"/>
+<text xml:space="preserve" text-anchor="middle" x="264.13" y="-241.4" font-family="Helvetica,sans-Serif" font-size="14.00">Explore</text>
+</g>
+<g id="clust4" class="cluster">
 <title>cluster_end_user</title>
-<polygon fill="none" stroke="black" points="447.57,-15 447.57,-175 590.84,-175 590.84,-15 447.57,-15"/>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="694.68,-48 694.68,-233 837.95,-233 837.95,-48 694.68,-48"/>
+<text xml:space="preserve" text-anchor="middle" x="766.31" y="-216.4" font-family="Helvetica,sans-Serif" font-size="14.00">Enterprise AI Apps</text>
 </g>
 <!-- horizon -->
 <g id="node1" class="node">
 <title>horizon</title>
-<path fill="#bbdefb" stroke="#1565c0" d="M17.45,-154.8C17.45,-154.8 112.27,-154.8 112.27,-154.8 118.27,-154.8 124.27,-160.8 124.27,-166.8 124.27,-166.8 124.27,-185.2 124.27,-185.2 124.27,-191.2 118.27,-197.2 112.27,-197.2 112.27,-197.2 17.45,-197.2 17.45,-197.2 11.45,-197.2 5.45,-191.2 5.45,-185.2 5.45,-185.2 5.45,-166.8 5.45,-166.8 5.45,-160.8 11.45,-154.8 17.45,-154.8"/>
-<text xml:space="preserve" text-anchor="middle" x="64.86" y="-183.3" font-family="Helvetica,sans-Serif" font-size="11.00">Federated Catalogs</text>
-<polyline fill="none" stroke="#1565c0" points="5.45,-176 124.27,-176"/>
-<text xml:space="preserve" text-anchor="middle" x="32.41" y="-162.1" font-family="Helvetica,sans-Serif" font-size="11.00">Horizon</text>
-<polyline fill="none" stroke="#1565c0" points="59.36,-154.8 59.36,-176"/>
-<text xml:space="preserve" text-anchor="middle" x="91.81" y="-162.1" font-family="Helvetica,sans-Serif" font-size="11.00">Metastore</text>
+<path fill="#bbdefb" stroke="#1565c0" d="M41.7,-16.8C41.7,-16.8 136.51,-16.8 136.51,-16.8 142.51,-16.8 148.51,-22.8 148.51,-28.8 148.51,-28.8 148.51,-47.2 148.51,-47.2 148.51,-53.2 142.51,-59.2 136.51,-59.2 136.51,-59.2 41.7,-59.2 41.7,-59.2 35.7,-59.2 29.7,-53.2 29.7,-47.2 29.7,-47.2 29.7,-28.8 29.7,-28.8 29.7,-22.8 35.7,-16.8 41.7,-16.8"/>
+<text xml:space="preserve" text-anchor="middle" x="89.11" y="-45.3" font-family="Helvetica,sans-Serif" font-size="11.00">Federated Catalogs</text>
+<polyline fill="none" stroke="#1565c0" points="29.7,-38 148.51,-38"/>
+<text xml:space="preserve" text-anchor="middle" x="56.65" y="-24.1" font-family="Helvetica,sans-Serif" font-size="11.00">Horizon</text>
+<polyline fill="none" stroke="#1565c0" points="83.6,-16.8 83.6,-38"/>
+<text xml:space="preserve" text-anchor="middle" x="116.06" y="-24.1" font-family="Helvetica,sans-Serif" font-size="11.00">Metastore</text>
 </g>
 <!-- iceberg -->
 <g id="node2" class="node">
 <title>iceberg</title>
-<path fill="#bbdefb" stroke="#1565c0" d="M128.2,-114.35C128.2,-116.72 99.81,-118.65 64.86,-118.65 29.91,-118.65 1.52,-116.72 1.52,-114.35 1.52,-114.35 1.52,-75.65 1.52,-75.65 1.52,-73.28 29.91,-71.35 64.86,-71.35 99.81,-71.35 128.2,-73.28 128.2,-75.65 128.2,-75.65 128.2,-114.35 128.2,-114.35"/>
-<path fill="none" stroke="#1565c0" d="M128.2,-114.35C128.2,-111.98 99.81,-110.05 64.86,-110.05 29.91,-110.05 1.52,-111.98 1.52,-114.35"/>
-<text xml:space="preserve" text-anchor="middle" x="64.86" y="-98.3" font-family="Helvetica,sans-Serif" font-size="11.00">GCP Open Lakehouse</text>
-<text xml:space="preserve" text-anchor="middle" x="64.86" y="-85.1" font-family="Helvetica,sans-Serif" font-size="11.00"> Iceberg Tables</text>
+<path fill="#ddffdd" stroke="#1565c0" d="M162.21,-154.78C162.21,-158.06 129.44,-160.72 89.11,-160.72 48.77,-160.72 16,-158.06 16,-154.78 16,-154.78 16,-101.23 16,-101.23 16,-97.94 48.77,-95.28 89.11,-95.28 129.44,-95.28 162.21,-97.94 162.21,-101.23 162.21,-101.23 162.21,-154.78 162.21,-154.78"/>
+<path fill="none" stroke="#1565c0" d="M162.21,-154.78C162.21,-151.49 129.44,-148.83 89.11,-148.83 48.77,-148.83 16,-151.49 16,-154.78"/>
+<text xml:space="preserve" text-anchor="middle" x="89.11" y="-137.9" font-family="Helvetica,sans-Serif" font-size="11.00">2- Customer GCS Iceberg </text>
+<text xml:space="preserve" text-anchor="middle" x="89.11" y="-124.7" font-family="Helvetica,sans-Serif" font-size="11.00"> - Parquet Data Files </text>
+<text xml:space="preserve" text-anchor="middle" x="89.11" y="-111.5" font-family="Helvetica,sans-Serif" font-size="11.00"> - Metadata json</text>
 </g>
 <!-- horizon&#45;&gt;iceberg -->
 <g id="edge2" class="edge">
 <title>horizon-&gt;iceberg</title>
-<path fill="none" stroke="#555555" d="M64.84,-154.72C64.84,-154.72 64.84,-127.51 64.84,-127.51"/>
-<polygon fill="#555555" stroke="#555555" points="67.29,-127.51 64.84,-120.51 62.39,-127.51 67.29,-127.51"/>
+<path fill="none" stroke="#555555" d="M88.95,-59.33C88.95,-59.33 88.95,-86.35 88.95,-86.35"/>
+<polygon fill="#555555" stroke="#555555" points="86.5,-86.35 88.95,-93.35 91.4,-86.35 86.5,-86.35"/>
+<text xml:space="preserve" text-anchor="middle" x="60.15" y="-77.04" font-family="Helvetica,sans-Serif" font-size="14.00">manages</text>
 </g>
 <!-- marketplace -->
 <g id="node3" class="node">
 <title>marketplace</title>
-<path fill="#bbdefb" stroke="#1565c0" d="M117.72,-36C117.72,-36 12,-36 12,-36 6,-36 0,-30 0,-24 0,-24 0,-12 0,-12 0,-6 6,0 12,0 12,0 117.72,0 117.72,0 123.72,0 129.72,-6 129.72,-12 129.72,-12 129.72,-24 129.72,-24 129.72,-30 123.72,-36 117.72,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="64.86" y="-14.7" font-family="Helvetica,sans-Serif" font-size="11.00">Snowflake Marketplace</text>
+<path fill="#bbdefb" stroke="#1565c0" d="M29.83,-197C29.83,-197 148.39,-197 148.39,-197 154.39,-197 160.39,-203 160.39,-209 160.39,-209 160.39,-221 160.39,-221 160.39,-227 154.39,-233 148.39,-233 148.39,-233 29.83,-233 29.83,-233 23.83,-233 17.83,-227 17.83,-221 17.83,-221 17.83,-209 17.83,-209 17.83,-203 23.83,-197 29.83,-197"/>
+<text xml:space="preserve" text-anchor="middle" x="89.11" y="-212.1" font-family="Helvetica,sans-Serif" font-size="11.00">1- Snowflake Marketplace</text>
 </g>
 <!-- iceberg&#45;&gt;marketplace -->
 <g id="edge1" class="edge">
 <title>iceberg-&gt;marketplace</title>
-<path fill="none" stroke="#555555" d="M64.84,-62.55C64.84,-62.55 64.84,-36.05 64.84,-36.05"/>
-<polygon fill="#555555" stroke="#555555" points="62.39,-62.55 64.84,-69.55 67.29,-62.55 62.39,-62.55"/>
+<path fill="none" stroke="#555555" d="M88.95,-169.4C88.95,-169.4 88.95,-196.69 88.95,-196.69"/>
+<polygon fill="#555555" stroke="#555555" points="91.4,-169.4 88.95,-162.4 86.5,-169.4 91.4,-169.4"/>
+</g>
+<!-- warehouse -->
+<g id="node5" class="node">
+<title>warehouse</title>
+<path fill="#bbdefb" stroke="#1565c0" d="M312.72,-146C312.72,-146 215.55,-146 215.55,-146 209.55,-146 203.55,-140 203.55,-134 203.55,-134 203.55,-122 203.55,-122 203.55,-116 209.55,-110 215.55,-110 215.55,-110 312.72,-110 312.72,-110 318.72,-110 324.72,-116 324.72,-122 324.72,-122 324.72,-134 324.72,-134 324.72,-140 318.72,-146 312.72,-146"/>
+<text xml:space="preserve" text-anchor="middle" x="264.13" y="-131.3" font-family="Helvetica,sans-Serif" font-size="11.00">Adaptive Warehouse </text>
+<text xml:space="preserve" text-anchor="middle" x="264.13" y="-118.1" font-family="Helvetica,sans-Serif" font-size="11.00"> (on Google Axion)</text>
+</g>
+<!-- iceberg&#45;&gt;warehouse -->
+<g id="edge3" class="edge">
+<title>iceberg-&gt;warehouse</title>
+<path fill="none" stroke="#555555" d="M162.57,-128C162.57,-128 194.79,-128 194.79,-128"/>
+<polygon fill="#555555" stroke="#555555" points="194.79,-130.45 201.79,-128 194.79,-125.55 194.79,-130.45"/>
+</g>
+<!-- looker -->
+<g id="node4" class="node">
+<title>looker</title>
+<path fill="#ddffdd" stroke="#1565c0" d="M311.8,-74C311.8,-74 216.46,-74 216.46,-74 210.46,-74 204.46,-68 204.46,-62 204.46,-62 204.46,-50 204.46,-50 204.46,-44 210.46,-38 216.46,-38 216.46,-38 311.8,-38 311.8,-38 317.8,-38 323.8,-44 323.8,-50 323.8,-50 323.8,-62 323.8,-62 323.8,-68 317.8,-74 311.8,-74"/>
+<text xml:space="preserve" text-anchor="middle" x="264.13" y="-52.7" font-family="Helvetica,sans-Serif" font-size="11.00">8- Looker Dashboard</text>
+</g>
+<!-- looker&#45;&gt;warehouse -->
+<g id="edge5" class="edge">
+<title>looker-&gt;warehouse</title>
+<path fill="none" stroke="#555555" d="M263.95,-82.68C263.95,-82.68 263.95,-109.59 263.95,-109.59"/>
+<polygon fill="#555555" stroke="#555555" points="266.4,-82.68 263.95,-75.68 261.5,-82.68 266.4,-82.68"/>
+</g>
+<!-- explore -->
+<g id="node6" class="node">
+<title>explore</title>
+<path fill="#bbdefb" stroke="#1565c0" d="M211.21,-181.8C211.21,-181.8 317.05,-181.8 317.05,-181.8 323.05,-181.8 329.05,-187.8 329.05,-193.8 329.05,-193.8 329.05,-212.2 329.05,-212.2 329.05,-218.2 323.05,-224.2 317.05,-224.2 317.05,-224.2 211.21,-224.2 211.21,-224.2 205.21,-224.2 199.21,-218.2 199.21,-212.2 199.21,-212.2 199.21,-193.8 199.21,-193.8 199.21,-187.8 205.21,-181.8 211.21,-181.8"/>
+<text xml:space="preserve" text-anchor="middle" x="264.13" y="-210.3" font-family="Helvetica,sans-Serif" font-size="11.00">3- Data Exploration</text>
+<polyline fill="none" stroke="#1565c0" points="199.21,-203 329.05,-203"/>
+<text xml:space="preserve" text-anchor="middle" x="232.59" y="-189.1" font-family="Helvetica,sans-Serif" font-size="11.00">Snowsight</text>
+<polyline fill="none" stroke="#1565c0" points="265.96,-181.8 265.96,-203"/>
+<text xml:space="preserve" text-anchor="middle" x="297.51" y="-189.1" font-family="Helvetica,sans-Serif" font-size="11.00">Notebook</text>
+</g>
+<!-- warehouse&#45;&gt;explore -->
+<g id="edge6" class="edge">
+<title>warehouse-&gt;explore</title>
+<path fill="none" stroke="#555555" d="M263.95,-146.16C263.95,-146.16 263.95,-173.04 263.95,-173.04"/>
+<polygon fill="#555555" stroke="#555555" points="261.5,-173.04 263.95,-180.04 266.4,-173.04 261.5,-173.04"/>
 </g>
 <!-- analyst -->
-<g id="node4" class="node">
+<g id="node7" class="node">
 <title>analyst</title>
-<path fill="#bbdefb" stroke="#1565c0" d="M264.87,-113C264.87,-113 178.72,-113 178.72,-113 172.72,-113 166.72,-107 166.72,-101 166.72,-101 166.72,-89 166.72,-89 166.72,-83 172.72,-77 178.72,-77 178.72,-77 264.87,-77 264.87,-77 270.87,-77 276.87,-83 276.87,-89 276.87,-89 276.87,-101 276.87,-101 276.87,-107 270.87,-113 264.87,-113"/>
-<text xml:space="preserve" text-anchor="middle" x="221.79" y="-98.3" font-family="Helvetica,sans-Serif" font-size="11.00">Cortex Analyst</text>
-<text xml:space="preserve" text-anchor="middle" x="221.79" y="-85.1" font-family="Helvetica,sans-Serif" font-size="11.00">(Semantic Context)</text>
+<path fill="#bbdefb" stroke="#1565c0" d="M464.2,-146C464.2,-146 378.05,-146 378.05,-146 372.05,-146 366.05,-140 366.05,-134 366.05,-134 366.05,-122 366.05,-122 366.05,-116 372.05,-110 378.05,-110 378.05,-110 464.2,-110 464.2,-110 470.2,-110 476.2,-116 476.2,-122 476.2,-122 476.2,-134 476.2,-134 476.2,-140 470.2,-146 464.2,-146"/>
+<text xml:space="preserve" text-anchor="middle" x="421.12" y="-131.3" font-family="Helvetica,sans-Serif" font-size="11.00">4- Cortex Analyst</text>
+<text xml:space="preserve" text-anchor="middle" x="421.12" y="-118.1" font-family="Helvetica,sans-Serif" font-size="11.00">(Semantic Context)</text>
 </g>
-<!-- iceberg&#45;&gt;analyst -->
-<g id="edge3" class="edge">
-<title>iceberg-&gt;analyst</title>
-<path fill="none" stroke="#555555" d="M128.69,-95C128.69,-95 158.06,-95 158.06,-95"/>
-<polygon fill="#555555" stroke="#555555" points="158.06,-97.45 165.06,-95 158.06,-92.55 158.06,-97.45"/>
+<!-- warehouse&#45;&gt;analyst -->
+<g id="edge4" class="edge">
+<title>warehouse-&gt;analyst</title>
+<path fill="none" stroke="#555555" d="M324.83,-128C324.83,-128 357.21,-128 357.21,-128"/>
+<polygon fill="#555555" stroke="#555555" points="357.21,-130.45 364.21,-128 357.21,-125.55 357.21,-130.45"/>
 </g>
 <!-- agent -->
-<g id="node5" class="node">
+<g id="node8" class="node">
 <title>agent</title>
-<path fill="#bbdefb" stroke="#1565c0" d="M387.57,-113C387.57,-113 325.87,-113 325.87,-113 319.87,-113 313.87,-107 313.87,-101 313.87,-101 313.87,-89 313.87,-89 313.87,-83 319.87,-77 325.87,-77 325.87,-77 387.57,-77 387.57,-77 393.57,-77 399.57,-83 399.57,-89 399.57,-89 399.57,-101 399.57,-101 399.57,-107 393.57,-113 387.57,-113"/>
-<text xml:space="preserve" text-anchor="middle" x="356.72" y="-91.7" font-family="Helvetica,sans-Serif" font-size="11.00">Cortex Agents</text>
+<path fill="#bbdefb" stroke="#1565c0" d="M623.56,-146C623.56,-146 525.2,-146 525.2,-146 519.2,-146 513.2,-140 513.2,-134 513.2,-134 513.2,-122 513.2,-122 513.2,-116 519.2,-110 525.2,-110 525.2,-110 623.56,-110 623.56,-110 629.56,-110 635.56,-116 635.56,-122 635.56,-122 635.56,-134 635.56,-134 635.56,-140 629.56,-146 623.56,-146"/>
+<text xml:space="preserve" text-anchor="middle" x="574.38" y="-131.3" font-family="Helvetica,sans-Serif" font-size="11.00">5- Cortex Agents </text>
+<text xml:space="preserve" text-anchor="middle" x="574.38" y="-118.1" font-family="Helvetica,sans-Serif" font-size="11.00"> (Powered by Gemini)</text>
 </g>
 <!-- analyst&#45;&gt;agent -->
-<g id="edge4" class="edge">
+<g id="edge7" class="edge">
 <title>analyst-&gt;agent</title>
-<path fill="none" stroke="#555555" d="M277.06,-95C277.06,-95 305.21,-95 305.21,-95"/>
-<polygon fill="#555555" stroke="#555555" points="305.21,-97.45 312.21,-95 305.21,-92.55 305.21,-97.45"/>
-</g>
-<!-- gemini -->
-<g id="node6" class="node">
-<title>gemini</title>
-<path fill="#bbdefb" stroke="#1565c0" d="M563.19,-167C563.19,-167 475.21,-167 475.21,-167 469.21,-167 463.21,-161 463.21,-155 463.21,-155 463.21,-143 463.21,-143 463.21,-137 469.21,-131 475.21,-131 475.21,-131 563.19,-131 563.19,-131 569.19,-131 575.19,-137 575.19,-143 575.19,-143 575.19,-155 575.19,-155 575.19,-161 569.19,-167 563.19,-167"/>
-<text xml:space="preserve" text-anchor="middle" x="519.2" y="-152.3" font-family="Helvetica,sans-Serif" font-size="11.00">Gemini Enterprise </text>
-<text xml:space="preserve" text-anchor="middle" x="519.2" y="-139.1" font-family="Helvetica,sans-Serif" font-size="11.00"> (Corporate AI Hub)</text>
-</g>
-<!-- agent&#45;&gt;gemini -->
-<g id="edge5" class="edge">
-<title>agent-&gt;gemini</title>
-<path fill="none" stroke="#555555" d="M356.84,-113.29C356.84,-126.72 356.84,-142.65 356.84,-142.65 356.84,-142.65 454.36,-142.65 454.36,-142.65"/>
-<polygon fill="#555555" stroke="#555555" points="454.36,-145.1 461.36,-142.65 454.36,-140.2 454.36,-145.1"/>
-<text xml:space="preserve" text-anchor="middle" x="427.57" y="-140.7" font-family="Helvetica,sans-Serif" font-size="9.00">MCP</text>
+<path fill="none" stroke="#555555" d="M476.45,-128C476.45,-128 504.39,-128 504.39,-128"/>
+<polygon fill="#555555" stroke="#555555" points="504.39,-130.45 511.39,-128 504.39,-125.55 504.39,-130.45"/>
 </g>
 <!-- cowork -->
-<g id="node7" class="node">
+<g id="node9" class="node">
 <title>cowork</title>
-<path fill="#bbdefb" stroke="#1565c0" d="M570.84,-113C570.84,-113 467.57,-113 467.57,-113 461.57,-113 455.57,-107 455.57,-101 455.57,-101 455.57,-89 455.57,-89 455.57,-83 461.57,-77 467.57,-77 467.57,-77 570.84,-77 570.84,-77 576.84,-77 582.84,-83 582.84,-89 582.84,-89 582.84,-101 582.84,-101 582.84,-107 576.84,-113 570.84,-113"/>
-<text xml:space="preserve" text-anchor="middle" x="519.2" y="-98.3" font-family="Helvetica,sans-Serif" font-size="11.00">CoWork </text>
-<text xml:space="preserve" text-anchor="middle" x="519.2" y="-85.1" font-family="Helvetica,sans-Serif" font-size="11.00"> (Insights and Reports)</text>
+<path fill="#bbdefb" stroke="#1565c0" d="M817.95,-200C817.95,-200 714.68,-200 714.68,-200 708.68,-200 702.68,-194 702.68,-188 702.68,-188 702.68,-176 702.68,-176 702.68,-170 708.68,-164 714.68,-164 714.68,-164 817.95,-164 817.95,-164 823.95,-164 829.95,-170 829.95,-176 829.95,-176 829.95,-188 829.95,-188 829.95,-194 823.95,-200 817.95,-200"/>
+<text xml:space="preserve" text-anchor="middle" x="766.31" y="-185.3" font-family="Helvetica,sans-Serif" font-size="11.00">6- CoWork </text>
+<text xml:space="preserve" text-anchor="middle" x="766.31" y="-172.1" font-family="Helvetica,sans-Serif" font-size="11.00"> (Insights and Reports)</text>
 </g>
 <!-- agent&#45;&gt;cowork -->
-<g id="edge6" class="edge">
+<g id="edge9" class="edge">
 <title>agent-&gt;cowork</title>
-<path fill="none" stroke="#555555" d="M399.83,-95C399.83,-95 446.55,-95 446.55,-95"/>
-<polygon fill="#555555" stroke="#555555" points="446.55,-97.45 453.55,-95 446.55,-92.55 446.55,-97.45"/>
+<path fill="none" stroke="#555555" d="M573.95,-146.42C573.95,-158.72 573.95,-172.65 573.95,-172.65 573.95,-172.65 693.74,-172.65 693.74,-172.65"/>
+<polygon fill="#555555" stroke="#555555" points="693.74,-175.1 700.74,-172.65 693.74,-170.2 693.74,-175.1"/>
+</g>
+<!-- gemini -->
+<g id="node10" class="node">
+<title>gemini</title>
+<path fill="#ddffdd" stroke="#1565c0" d="M814.27,-146C814.27,-146 718.35,-146 718.35,-146 712.35,-146 706.35,-140 706.35,-134 706.35,-134 706.35,-122 706.35,-122 706.35,-116 712.35,-110 718.35,-110 718.35,-110 814.27,-110 814.27,-110 820.27,-110 826.27,-116 826.27,-122 826.27,-122 826.27,-134 826.27,-134 826.27,-140 820.27,-146 814.27,-146"/>
+<text xml:space="preserve" text-anchor="middle" x="766.31" y="-131.3" font-family="Helvetica,sans-Serif" font-size="11.00">7- Gemini Enterprise </text>
+<text xml:space="preserve" text-anchor="middle" x="766.31" y="-118.1" font-family="Helvetica,sans-Serif" font-size="11.00"> (Corporate AI Hub)</text>
+</g>
+<!-- agent&#45;&gt;gemini -->
+<g id="edge8" class="edge">
+<title>agent-&gt;gemini</title>
+<path fill="none" stroke="#555555" d="M635.9,-128C635.9,-128 697.61,-128 697.61,-128"/>
+<polygon fill="#555555" stroke="#555555" points="697.61,-130.45 704.61,-128 697.61,-125.55 697.61,-130.45"/>
+<text xml:space="preserve" text-anchor="middle" x="669.12" y="-132.2" font-family="Helvetica,sans-Serif" font-size="14.00">MCP</text>
 </g>
 <!-- coco -->
-<g id="node8" class="node">
+<g id="node11" class="node">
 <title>coco</title>
-<path fill="#bbdefb" stroke="#1565c0" d="M562.58,-59C562.58,-59 475.82,-59 475.82,-59 469.82,-59 463.82,-53 463.82,-47 463.82,-47 463.82,-35 463.82,-35 463.82,-29 469.82,-23 475.82,-23 475.82,-23 562.58,-23 562.58,-23 568.58,-23 574.58,-29 574.58,-35 574.58,-35 574.58,-47 574.58,-47 574.58,-53 568.58,-59 562.58,-59"/>
-<text xml:space="preserve" text-anchor="middle" x="519.2" y="-44.3" font-family="Helvetica,sans-Serif" font-size="11.00">CoCo </text>
-<text xml:space="preserve" text-anchor="middle" x="519.2" y="-31.1" font-family="Helvetica,sans-Serif" font-size="11.00"> (Agentic Assistent)</text>
+<path fill="#bbdefb" stroke="#1565c0" d="M809.69,-92C809.69,-92 722.93,-92 722.93,-92 716.93,-92 710.93,-86 710.93,-80 710.93,-80 710.93,-68 710.93,-68 710.93,-62 716.93,-56 722.93,-56 722.93,-56 809.69,-56 809.69,-56 815.69,-56 821.69,-62 821.69,-68 821.69,-68 821.69,-80 821.69,-80 821.69,-86 815.69,-92 809.69,-92"/>
+<text xml:space="preserve" text-anchor="middle" x="766.31" y="-77.3" font-family="Helvetica,sans-Serif" font-size="11.00">CoCo </text>
+<text xml:space="preserve" text-anchor="middle" x="766.31" y="-64.1" font-family="Helvetica,sans-Serif" font-size="11.00"> (Agentic Assistent)</text>
 </g>
 <!-- agent&#45;&gt;coco -->
-<g id="edge7" class="edge">
+<g id="edge10" class="edge">
 <title>agent-&gt;coco</title>
-<path fill="none" stroke="#555555" d="M356.84,-76.77C356.84,-63.38 356.84,-47.5 356.84,-47.5 356.84,-47.5 454.81,-47.5 454.81,-47.5"/>
-<polygon fill="#555555" stroke="#555555" points="454.81,-49.95 461.81,-47.5 454.81,-45.05 454.81,-49.95"/>
+<path fill="none" stroke="#555555" d="M573.95,-109.7C573.95,-97.24 573.95,-83 573.95,-83 573.95,-83 702.16,-83 702.16,-83"/>
+<polygon fill="#555555" stroke="#555555" points="702.16,-85.45 709.16,-83 702.16,-80.55 702.16,-85.45"/>
 </g>
 </g>
 </svg>
