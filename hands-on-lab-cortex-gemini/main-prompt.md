@@ -50,3 +50,48 @@ link to (link to the dataset).
 - should be in snowflake notebook
 - all diagrams must be in DOT
 - Feel free to fill the gap in steps, each step will be one or two cells (in a way that in each cell attendee understand what happens)
+
+
+## Narative
+it should read like a narration:
+
+<starts from here the example
+
+###marketplace
+we get our data from the Snowflake Marketplace. Marketplace let's team augment data ... and for data providers a secure and managed place to sell/share data withe outside world.
+
+let's build an economic dataset to track economic wellbeing of americans in each state. we need income, inflation, mortgage rate, unemployment rate, and growth rate. We track on monthly basis.
+
+so let's go get the source data from Marketplace.
+
+UI: left panel> marketplace> snowflake marketplace> data products> search: ... > 
+```
+code sell
+```
+
+We are going to create our ecomic table in iceberg format. 
+
+###iceberg
+iceberg provides ... 
+
+one of the advantages of iceberg is it resides in customer gcs buckets, customer owns them.
+let's create the bucket, assign role, and ...
+
+code cell
+
+ui: go to console.google> gcs> ...> create bucket, name: lastname-firstname-hol > in permission tab> add ...
+
+code cell
+
+ui: ...
+ui: let's view the iceberg data and metadata in our gcs: go to ....
+
+
+As you see we narrate very briefly, just say the core advantage of the component we choose, very telegraphic ui, related or equvalent code cell, ...
+
+try to have one code cell in each step (like verification after creation in the same cell, etc). 
+the goal is to teach through ui (but mainly for playing around) but the lab goes through running codes (mainly, except for when we do something in looker or google env). UI is just to "teach" and do "playground". We do not need to give exact instruction (put this in this field, etc).
+
+When we want to provide insight about our choice of components (why this), we want to highly depend on "./input/blog-post.md" which we are implementing (mainly the ai part). so the reasons can come from there (summarized or edited or added), it is a good starting point.
+
+
