@@ -3,7 +3,24 @@
 Code cells + telegraphic UI pointers, section by section. Follows ./narration.md.
 
 
-## RBAC
+## Setup
+
+Three environments:
+- **Snowflake** — register at https://go.dataops.live/snowflake-and-gemini-workshop → log in with given credentials.
+- **GCP** — open https://explore.qwiklabs.com for GCS bucket and Gemini Enterprise.
+- **Looker** — open <provided in lab> for dashboard creation.
+
+## Workspace
+
+UI: Projects → Workspaces → **+** → paste repo: `https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions` → open `hands-on-lab-cortex-gemini/hol-cortex-gemini.ipynb` → click "Connected" to start service.
+
+Open a second browser tab at https://app.snowflake.com for exploring components.
+
+Two roles:
+- **`hol_role`** — runs notebook, owns resources.
+- **`end_user_role`** — CoWork and Gemini Enterprise end user.
+
+### RBAC
 
 ```sql
 USE ROLE ACCOUNTADMIN;

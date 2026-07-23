@@ -5,7 +5,6 @@ All diagram-related code for the notebook.
 
 ## Architecture Diagram (Graphviz DOT)
 
-Source file: `input/arch-diagram-graphviz.dot`
 
 ```dot
 digraph cortex_stack {
@@ -18,7 +17,7 @@ digraph cortex_stack {
     
     subgraph cluster_data {
         label = "Extract"
-        horizon iceberg marketplace
+        marketplace iceberg horizon
     }
     
     subgraph cluster_exploration {
@@ -26,20 +25,21 @@ digraph cortex_stack {
         looker warehouse explore
     }
 
-    marketplace [label="1- Snowflake Marketplace" shape=record]
-    horizon [shape=record label="Federated Catalogs | {Horizon | Metastore}"]
-    iceberg [label="2- Customer GCS Iceberg \n - Parquet Data Files \n - Metadata json", shape=cylinder  fillcolor="#ddffdd"]
+    marketplace [label="Snowflake Marketplace" shape=record]
+    horizon [shape=record label="Federated Catalogs | {Snowflake \n Horizon | Lakehouse \n Runtime Catalog}"]
+    iceberg [label="Customer GCS Iceberg \n - Parquet Data Files \n - Metadata json", shape=cylinder  fillcolor="#ddffdd"]
     warehouse [label="Adaptive Warehouse \n (on Google Axion)"]
-    explore [label="3- Data Exploration | {Snowsight | Notebook}" shape=record]
-    analyst [label="4- Cortex Analyst\n(Semantic Context)"]
-    agent   [label="5- Cortex Agents \n (Powered by Gemini)"]
-    cowork  [label="6- CoWork \n (Insights and Reports)"]
-    gemini  [label="7- Gemini Enterprise \n (Corporate AI Hub)"  fillcolor="#ddffdd"]
-    looker  [label="8- Looker Dashboard" fillcolor="#ddffdd" ]
+    explore [label="Data Exploration | {Snowsight | Notebook}" shape=record]
+    analyst [label="Cortex Analyst\n(Semantic Context)"]
+    agent   [label="Cortex Agents \n (Powered by Gemini)"]
+    cowork  [label="CoWork \n (Insights and Reports)"]
+    gemini  [label="Gemini Enterprise \n (Corporate AI Hub)"  fillcolor="#ddffdd"]
+    looker  [label="Looker Dashboard" fillcolor="#ddffdd" ]
     coco    [label="CoCo \n (Agentic Assistent)"]
 
-    iceberg -> marketplace [dir=back constraint=false] 
     horizon -> iceberg [xlabel="manages"  constraint=false]
+    iceberg -> marketplace [dir=back constraint=false] 
+
     iceberg -> warehouse
     warehouse -> analyst
     looker -> warehouse [dir=back  constraint=false]
