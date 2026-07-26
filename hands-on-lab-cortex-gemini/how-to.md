@@ -10,7 +10,7 @@ Three environments:
 - **GCP** — open https://explore.qwiklabs.com for GCS bucket and Gemini Enterprise.
 - **Looker** — open <provided in lab> for dashboard creation.
 
-## Workspace
+## Workspaceƒ
 
 We create a git integration and then a new workspace connected to our git repo.
 
