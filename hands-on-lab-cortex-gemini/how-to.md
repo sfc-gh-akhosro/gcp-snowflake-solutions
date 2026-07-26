@@ -1,6 +1,6 @@
 # How-To
 
-Code cells + telegraphic UI pointers, section by section. Follows ./narration.md.
+Code cells + brief but effective UI pointers, section by section. Follows ./narration.md.
 
 
 ## Setup
@@ -12,9 +12,16 @@ Three environments:
 
 ## Workspace
 
-UI: Projects → Workspaces → **+** → paste repo: `https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions` → open `hands-on-lab-cortex-gemini/hol-cortex-gemini.ipynb` → click "Connected" to start service.
+**UI-Snowsight**: Go to Projects → Workspaces.
+- Select "gcp-snowflake-solutions" from the list of available workspaces.
+- If not available, create a public git integration and connect to this repo.
+    — click **+** on the very top left > Git Workspace
+    - repo name: `https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions`
+    - choose public repo connection (no auth needed).
 
-Open a second browser tab at https://app.snowflake.com for exploring components.
+- Open `hands-on-lab-cortex-gemini/hol-cortex-gemini.ipynb`. Click "Connected" to start service. It might take a few minutes to start a service, please do it right away while reviewing the course.
+
+Open a second browser tab at the same Snowflake instance URL for exploring components. In this tab find Marketplace, Cortex Analyst, Agents, AI Functions, dbt Projects, Database Explorer, and Workspaces.
 
 Two roles:
 - **`hol_role`** — runs notebook, owns resources.
@@ -79,9 +86,10 @@ SELECT CURRENT_ROLE() AS role, CURRENT_WAREHOUSE() AS wh, CURRENT_DATABASE() AS 
 
 ## Marketplace
 
-UI: Data Products → Marketplace → search "Snowflake Public Data" → Get (free) → database name: `SNOWFLAKE_PUBLIC_DATA`.
+**UI-Snowsight**: Data Products → Marketplace → search "Snowflake Public Data" → **Get** (free).
+- Database name: `SNOWFLAKE_PUBLIC_DATA`.
 
-Already available on most accounts — verify below.
+This dataset is already available on most workshop accounts. The cell below verifies access to all four source tables we need.
 
 ```sql
 -- Verify access to all four source tables
@@ -97,7 +105,10 @@ SELECT 'IRS_INCOME', COUNT(*) FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.IRS_IN
 
 ## GCS Bucket for Iceberg
 
-UI: Google Cloud Console → Cloud Storage → Create Bucket → name: `yourlastname-firstname-hol` → region: `us-central1`.
+**UI-GCP**: Google Cloud Console → Cloud Storage → **Create Bucket**.
+- Name: `firstname_lastname_hol_0729`
+- Location: `Multi-region`
+- Leave everything else as default.
 
 ```sql
 -- Create an external volume pointing to the shared GCS bucket
@@ -123,7 +134,9 @@ WHERE "property" = 'STORAGE_LOCATION_1';
 
 Copy the printed service account (principal) from above.
 
-UI: Google Cloud Console → Cloud Storage → your bucket → Permissions → Grant Access → paste service account → Role: Storage Object Admin → Save.
+**UI-GCP**: Google Cloud Console → your bucket → **Permissions** tab → **Grant Access**.
+- Paste the service account you copied.
+- Role: **Storage Object Admin** → Save.
 
 Then plug your bucket name into `STORAGE_BASE_URL` above if different.
 
@@ -256,7 +269,10 @@ ORDER BY date, geo_id;
 
 ## Data Profiling
 
-UI: After running the query, click **Chart** to visualize trends. Try **Query Profile** to see execution plan. Click column headers for profiling stats.
+**UI-Snowsight**: After running the query, explore the cell output:
+- Click **Chart** tab to visualize trends over time.
+- Click **Query Profile** tab to see the execution plan.
+- Click column headers for quick profiling stats (min, max, distribution).
 
 ```sql
 -- Compare CPI index growth vs income index growth (national)
@@ -385,11 +401,12 @@ SHOW AGENTS IN SCHEMA hol_db.public;
 
 ## CoWork
 
-UI: AI & ML → Snowflake Intelligence → switch role to `end_user_role` / `hol_wh` → select **hol_economic_agent** → ask:
+**UI-Snowsight**: AI & ML → Snowflake Intelligence (this is CoWork).
+- Switch role to `end_user_role`, warehouse: `hol_wh`.
+- Select **hol_economic_agent** from the agent list.
+- Ask: "How has the 30-year mortgage rate changed relative to inflation since 2020?"
 
-"How has the 30-year mortgage rate changed relative to inflation since 2020?"
-
-Inspect the generated SQL in the response.
+Look at the response — it includes the generated SQL so you can see exactly what query was executed. This is the same agent we built, but through a chat interface instead of a notebook.
 
 
 ## MCP Server
@@ -449,11 +466,16 @@ ORDER BY ord;
 
 ## Gemini Enterprise
 
-UI: Google Cloud Console → Gemini for Google Cloud → Data Connectors → Add Connector → Custom MCP Server → fill values from OAuth output above → complete OAuth flow → Enable Actions.
+**UI-GCP**: Google Cloud Console → search "Gemini for Google Cloud" → **Data Connectors** → **Add Connector** → Custom MCP Server.
+- Fill in the fields using values from the MCP output above (server URL, client ID, client secret, scopes, etc.).
+- Complete the OAuth authorization flow when prompted.
+- Click **Enable Actions** to activate.
 
-Then in Gemini Enterprise chat, ask:
+Now open Gemini Enterprise chat and ask the same question:
 
 "How has the 30-year mortgage rate changed relative to inflation since 2020?"
+
+You should get the same grounded answer — this time served through Google Cloud's corporate AI assistant.
 
 
 
@@ -470,7 +492,7 @@ ALTER ACCOUNT UNSET NETWORK_POLICY;
 
 If org policy blocks MCP connector:
 
-UI: IAM & Admin → Organization Policies → search `disableCustomMcpServerConnector` → Enforcement: Off → Save → retry.
+**UI-GCP**: IAM & Admin → Organization Policies → search `disableCustomMcpServerConnector` → Enforcement: **Off** → Save. Retry connector setup.
 
 
 ## Cleanup
