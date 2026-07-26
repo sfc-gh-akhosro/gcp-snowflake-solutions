@@ -3,13 +3,13 @@
 ## Goal
 
 We are building a Hands-on-Lab (HoL) or workshop around following products/features
+- Iceberg
 - Gemini 
 - Gemini Enteprise
 - Cortex Agents, Cortex Analyst
 - Semantic Views and models
 - MCP Connection between GE and Cortex
-- CoWork, CoCo
-- Iceberg (optional)
+- CoWork, Gemini Enteprise
 
 
 ## Reources

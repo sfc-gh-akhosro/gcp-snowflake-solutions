@@ -19,7 +19,13 @@ This lab loosely follows the architecture described in [blog-post.md](./blog-pos
 
 Open **`hol-cortex-gemini.ipynb`** in a Snowflake Workspace and run cells top-to-bottom. The notebook is self-contained — narration, code, and UI pointers all in one place.
 
-## Project Files
+## Contribute 
+
+- main-prompt is human input only, it helps ai to create narration
+- narration should be reviewed and confirmed by human. main prompt sets the tone and story.
+- based on narration and main prompt, ai created how-to wich included UI pointers and code blocks.
+- you can provide proofreads input for the final outcome.
+
 
 | File | Purpose |
 |------|---------|
