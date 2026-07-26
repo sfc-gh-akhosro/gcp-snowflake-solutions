@@ -4,6 +4,8 @@ A hands-on lab that builds an AI-ready data product on Apache Iceberg — from r
 
 This lab loosely follows the architecture described in [blog-post.md](./blog-post.md).
 
+If you are looking for how to setup MCP connection between Snowflake Cortex and Gemini Enterprise, please got [mcp guide](./mcp-server-setup-guide.md)
+
 ![Architecture](./input/arch-diagram.svg)
 
 ## What You Build
@@ -36,6 +38,7 @@ Open **`hol-cortex-gemini.ipynb`** in a Snowflake Workspace and run cells top-to
 | `how-to.md` | Code cells + telegraphic UI pointers, organized by section |
 | `diagrams.md` | Graphviz DOT source and spotlight display snippets |
 | `proofreads.md` | Feedback and iteration notes — edit this to give AI direction |
+| `mcp-server-setup-guide.md` | Gemini Enterprise MCP call to Snowflake Cortex |
 | `input/` | Supporting assets (SVG diagram, reference docs) |
 
 ## Prerequisites
