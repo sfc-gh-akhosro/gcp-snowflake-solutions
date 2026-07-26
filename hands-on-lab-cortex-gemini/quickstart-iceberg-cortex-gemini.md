@@ -198,7 +198,7 @@ Copy the service account printed above.
 
 **In Google Cloud Console**: Your bucket → **Permissions** tab → **Grant Access**.
 - Paste the service account.
-- Role: **Storage Object Admin** → Save.
+- Role: **Storage Admin** → Save.
 
 ### Create Iceberg Table
 
@@ -483,12 +483,12 @@ SHOW AGENTS IN SCHEMA hol_db.public;
 
 Snowflake CoWork is the chat surface for business users — no SQL knowledge needed.
 
-**In Snowsight**: AI & ML → Snowflake Intelligence.
-- Switch role to `end_user_role`, warehouse: `hol_wh`.
-- Select **hol_economic_agent** from the agent list.
+**In Snowsight**: AI & ML → Open Snowflake CoWork.
+- In CoWork, go to bottom left profile, click setting, and switch role to `end_user_role`, warehouse: `hol_wh`. Done.
+- You should be able to see **hol_economic_agent** in the agent list (control buttons of the CoWork chat).
 - Ask: *"How has the 30-year mortgage rate changed relative to inflation since 2020?"*
 
-The response includes the generated SQL so you can see exactly what query was executed.
+The response includes the generated SQL so you can see exactly what query was executed. Same agent, same data, different role — a chat-based surface instead of a notebook.
 
 <!-- ------------------------ -->
 ## MCP Server
@@ -603,7 +603,7 @@ Gemini Enterprise is Google Cloud's corporate AI assistant — the chat interfac
 
 By registering our Snowflake MCP server as a data connector, the Cortex Agent becomes a tool that Gemini calls when it needs economic data. Employees ask questions in Gemini and get grounded answers from governed Iceberg data.
 
-**In Google Cloud Console**: Search "Gemini for Google Cloud" → **Data Connectors** → **Add Connector** → Custom MCP Server.
+**In Google Cloud Console**: Search "Gemini Enterprise" → Data stores → **+Create data store** → Add MCP Server.
 - Fill in the fields using values from the MCP output above (server URL, client ID, client secret, scopes, etc.).
 - Complete the OAuth authorization flow when prompted.
 - Click **Actions** → "Reload Custom Actions" and log in.

@@ -431,12 +431,12 @@ SHOW AGENTS IN SCHEMA hol_db.public;
 
 ## CoWork
 
-**UI-Snowsight**: AI & ML → Snowflake Intelligence (this is CoWork).
-- Switch role to `end_user_role`, warehouse: `hol_wh`.
-- Select **hol_economic_agent** from the agent list.
+**UI-Snowsight**: AI & ML → Open Snowflake CoWork.
+- In CoWork, go to bottom left profile, click setting, and switch role to `end_user_role`, warehouse: `hol_wh`. Done.
+- You should be able to see **hol_economic_agent** in the agent list (control buttons of the CoWork chat).
 - Ask: "How has the 30-year mortgage rate changed relative to inflation since 2020?"
 
-Look at the response — it includes the generated SQL so you can see exactly what query was executed. This is the same agent we built, but through a chat interface instead of a notebook.
+Look at the response — it includes the generated SQL so you can see exactly what query was executed. Same agent, same data, different role — a chat-based surface instead of a notebook.
 
 
 ## MCP Server
@@ -535,7 +535,7 @@ ORDER BY ord;
 
 ## Gemini Enterprise
 
-**UI-GCP**: Google Cloud Console → search "Gemini for Google Cloud" → **Data Connectors** → **Add Connector** → Custom MCP Server.
+**UI-GCP**: Google Cloud Console → search "Gemini Enterprise" → Data stores → **+Create data store** → Add MCP Server.
 - Fill in the fields using values from the MCP output above (server URL, client ID, client secret, scopes, etc.).
 - Complete the OAuth authorization flow when prompted.
 - Click **Actions** and then "Reload Custom Actions" and log in with your workshop provided account.
