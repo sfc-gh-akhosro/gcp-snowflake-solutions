@@ -548,6 +548,15 @@ Now open Gemini Enterprise chat and ask the same question:
 You should get the same grounded answer — this time served through Google Cloud's corporate AI assistant.
 
 
+## Looker
+Please follow [Looker instructions](https://docs.google.com/document/d/14DwWTrCz4YLreXNiYfJ3cI86MUNT44lj_yXlIq__pwg/edit?usp=sharing&resourcekey=0-s31XT4gARcUOk4CX6ZYWvw)
+
+We would like to:
+- Log in to looker (given account, username, password)
+- Create a secure connection to your Snowflake account
+- Create a project and database and ecplore Looker
+- Get familiar with LookML (which define the semantic model of your data)
+- Talk to your Snowflake data 
 
 ## Troubleshooting
 
