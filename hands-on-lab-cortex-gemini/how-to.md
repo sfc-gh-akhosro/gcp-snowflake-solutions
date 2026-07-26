@@ -12,26 +12,44 @@ Three environments:
 
 ## Workspace
 
-**UI-Snowsight**: Go to Projects → Workspaces.
-- Select "gcp-snowflake-solutions" from the list of available workspaces.
-- If not available, create a public git integration and connect to this repo.
-    — click **+** on the very top left > Git Workspace
-    - repo name: `https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions`
-    - choose public repo connection (no auth needed).
+We create a git integration and then a new workspace connected to our git repo.
 
-- Open `hands-on-lab-cortex-gemini/hol-cortex-gemini.ipynb`. Click "Connected" to start service. It might take a few minutes to start a service, please do it right away while reviewing the course.
+```sql
+use accountadmin;
+CREATE OR REPLACE API INTEGRATION github_api_integration
+  API_PROVIDER = git_https_api
+  API_ALLOWED_PREFIXES = ('https://github.com/sfc-gh-akhosro/')
+  ENABLED = TRUE;
+
+GRANT USAGE ON INTEGRATION github_api_integration TO ROLE ATTENDEE_ROLE;
+```
+
+**UI-Snowsight**:
+- Go to Projects > Workspaces
+- Select From Git repository
+- Paste: https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions.git
+- Select github_api_integration from the API Integration dropdown
+- Choose Public repository as the authentication method
+- Select Create
+
+- Open `hands-on-lab-cortex-gemini/hol-cortex-gemini.ipynb`. Click "Connected" to start a notebook service (accept defaults). It might take a few minutes to start a service, please do it right away while reviewing the course.
 
 Open a second browser tab at the same Snowflake instance URL for exploring components. In this tab find Marketplace, Cortex Analyst, Agents, AI Functions, dbt Projects, Database Explorer, and Workspaces.
+
+## RBAC
 
 Two roles:
 - **`hol_role`** — runs notebook, owns resources.
 - **`end_user_role`** — CoWork and Gemini Enterprise end user.
 
-### RBAC
 
 ```sql
 USE ROLE ACCOUNTADMIN;
-USE WAREHOUSE DEFAULT_WH;
+
+-- Create a warehouse for this lab (guaranteed to exist)
+CREATE WAREHOUSE IF NOT EXISTS hol_wh
+  WAREHOUSE_SIZE = 'XSMALL' AUTO_SUSPEND = 60 INITIALLY_SUSPENDED = TRUE;
+USE WAREHOUSE hol_wh;
 
 -- Builder role: owns all workshop objects
 CREATE ROLE IF NOT EXISTS hol_role;
@@ -51,6 +69,7 @@ GRANT CREATE DATABASE        ON ACCOUNT TO ROLE hol_role;
 GRANT CREATE WAREHOUSE       ON ACCOUNT TO ROLE hol_role;
 GRANT CREATE INTEGRATION     ON ACCOUNT TO ROLE hol_role;
 GRANT CREATE EXTERNAL VOLUME ON ACCOUNT TO ROLE hol_role;
+GRANT OWNERSHIP ON WAREHOUSE hol_wh TO ROLE hol_role COPY CURRENT GRANTS;
 
 -- Cortex access for both roles
 GRANT DATABASE ROLE SNOWFLAKE.CORTEX_USER TO ROLE hol_role;
@@ -58,10 +77,6 @@ GRANT DATABASE ROLE SNOWFLAKE.CORTEX_USER TO ROLE end_user_role;
 
 -- Switch to hol_role to build
 USE ROLE hol_role;
-
--- Create owned resources
-CREATE WAREHOUSE IF NOT EXISTS hol_wh
-  WAREHOUSE_SIZE = 'XSMALL' AUTO_SUSPEND = 60 INITIALLY_SUSPENDED = TRUE;
 USE WAREHOUSE hol_wh;
 
 CREATE DATABASE IF NOT EXISTS hol_db;
@@ -87,19 +102,19 @@ SELECT CURRENT_ROLE() AS role, CURRENT_WAREHOUSE() AS wh, CURRENT_DATABASE() AS 
 ## Marketplace
 
 **UI-Snowsight**: Data Products → Marketplace → search "Snowflake Public Data" → **Get** (free).
-- Database name: `SNOWFLAKE_PUBLIC_DATA`.
+- Database name: `SNOWFLAKE_PUBLIC_DATA_FREE` (accept default options and dont change them).
 
-This dataset is already available on most workshop accounts. The cell below verifies access to all four source tables we need.
+- direct links: https://app.snowflake.com/marketplace/listing/GZTSZ290BV255/snowflake-public-data-products-snowflake-public-data-free
 
 ```sql
--- Verify access to all four source tables
-SELECT 'BLS_PRICE' AS source, COUNT(*) AS row_count FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.BUREAU_OF_LABOR_STATISTICS_PRICE_TIMESERIES
+-- Verify marketplace data access
+SELECT 'BLS_PRICE' AS source, COUNT(*) AS row_count FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.BUREAU_OF_LABOR_STATISTICS_PRICE_TIMESERIES
 UNION ALL
-SELECT 'BLS_EMPLOYMENT', COUNT(*) FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.BUREAU_OF_LABOR_STATISTICS_EMPLOYMENT_TIMESERIES
+SELECT 'BLS_EMPLOYMENT', COUNT(*) FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.BUREAU_OF_LABOR_STATISTICS_EMPLOYMENT_TIMESERIES
 UNION ALL
-SELECT 'FREDDIE_MAC', COUNT(*) FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.FREDDIE_MAC_HOUSING_TIMESERIES
+SELECT 'FREDDIE_MAC', COUNT(*) FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.FREDDIE_MAC_HOUSING_TIMESERIES
 UNION ALL
-SELECT 'IRS_INCOME', COUNT(*) FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.IRS_INDIVIDUAL_INCOME_TIMESERIES;
+SELECT 'IRS_INCOME', COUNT(*) FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.IRS_INDIVIDUAL_INCOME_TIMESERIES;
 ```
 
 
@@ -136,14 +151,14 @@ Copy the printed service account (principal) from above.
 
 **UI-GCP**: Google Cloud Console → your bucket → **Permissions** tab → **Grant Access**.
 - Paste the service account you copied.
-- Role: **Storage Object Admin** → Save.
+- Role: **Storage Admin** → Save.
 
 Then plug your bucket name into `STORAGE_BASE_URL` above if different.
 
 ## Iceberg Table
 
 ```sql
--- Create Iceberg table: national metrics + state-level unemployment & income
+-- Create Iceberg table: join four marketplace sources into one wide-format table
 CREATE OR REPLACE ICEBERG TABLE hol_db.public.economic_indicators
   CATALOG = 'SNOWFLAKE'
   EXTERNAL_VOLUME = 'hol_gcs_vol'
@@ -153,7 +168,7 @@ WITH cpi AS (
   SELECT
     DATE_TRUNC('month', date) AS month,
     AVG(value) AS cpi_index
-  FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.BUREAU_OF_LABOR_STATISTICS_PRICE_TIMESERIES
+  FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.BUREAU_OF_LABOR_STATISTICS_PRICE_TIMESERIES
   WHERE variable_name = 'CPI: All items, Not seasonally adjusted, Monthly'
     AND geo_id = 'country/USA'
   GROUP BY 1
@@ -162,7 +177,7 @@ mortgage_30yr AS (
   SELECT
     DATE_TRUNC('month', date) AS month,
     ROUND(AVG(value) * 100, 2) AS mortgage_rate_30yr_pct
-  FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.FREDDIE_MAC_HOUSING_TIMESERIES
+  FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.FREDDIE_MAC_HOUSING_TIMESERIES
   WHERE variable_name = '30-Year Fixed Rate Mortgage Rate, National Average'
     AND geo_id = 'country/USA'
   GROUP BY 1
@@ -171,7 +186,7 @@ mortgage_15yr AS (
   SELECT
     DATE_TRUNC('month', date) AS month,
     ROUND(AVG(value) * 100, 2) AS mortgage_rate_15yr_pct
-  FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.FREDDIE_MAC_HOUSING_TIMESERIES
+  FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.FREDDIE_MAC_HOUSING_TIMESERIES
   WHERE variable_name = '15-Year Fixed Rate Mortgage Rate, National Average'
     AND geo_id = 'country/USA'
   GROUP BY 1
@@ -181,7 +196,7 @@ unemployment AS (
     DATE_TRUNC('month', date) AS month,
     geo_id,
     AVG(value) AS unemployment_rate_pct
-  FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.BUREAU_OF_LABOR_STATISTICS_EMPLOYMENT_TIMESERIES
+  FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.BUREAU_OF_LABOR_STATISTICS_EMPLOYMENT_TIMESERIES
   WHERE variable_name = 'Local Area Unemployment: Unemployment Rate, Not seasonally adjusted, Monthly'
     AND LENGTH(geo_id) = 8
   GROUP BY 1, 2
@@ -191,20 +206,18 @@ national_unemployment AS (
   FROM unemployment
   GROUP BY 1
 ),
--- IRS: average income per return by state (annual)
 income_raw AS (
   SELECT
     agi.geo_id,
     YEAR(agi.date) AS yr,
     ROUND(agi.value / NULLIF(ret.value, 0), 0) AS avg_income_per_return
-  FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.IRS_INDIVIDUAL_INCOME_TIMESERIES agi
-  JOIN SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.IRS_INDIVIDUAL_INCOME_TIMESERIES ret
+  FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.IRS_INDIVIDUAL_INCOME_TIMESERIES agi
+  JOIN SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.IRS_INDIVIDUAL_INCOME_TIMESERIES ret
     ON agi.geo_id = ret.geo_id AND agi.date = ret.date
   WHERE agi.variable_name = 'Adjusted gross income (AGI), AGI bin: Total'
     AND ret.variable_name = 'Number of returns, AGI bin: Total'
     AND LENGTH(agi.geo_id) = 8
 ),
--- Convert to index: base year (earliest per state) = 100
 income_indexed AS (
   SELECT
     geo_id,
@@ -213,7 +226,6 @@ income_indexed AS (
     ROUND((avg_income_per_return / FIRST_VALUE(avg_income_per_return) OVER (PARTITION BY geo_id ORDER BY yr)) * 100, 1) AS income_index
   FROM income_raw
 ),
--- National income index (average across states)
 national_income AS (
   SELECT yr, ROUND(AVG(income_index), 1) AS income_index
   FROM income_indexed
@@ -221,10 +233,9 @@ national_income AS (
 ),
 geo AS (
   SELECT geo_id, geo_name
-  FROM SNOWFLAKE_PUBLIC_DATA.PUBLIC_DATA_FREE.GEOGRAPHY_INDEX
+  FROM SNOWFLAKE_PUBLIC_DATA_FREE.PUBLIC_DATA_FREE.GEOGRAPHY_INDEX
   WHERE level = 'State'
 ),
--- National rows: all metrics
 national AS (
   SELECT
     c.month AS date,
@@ -243,7 +254,6 @@ national AS (
   LEFT JOIN national_unemployment nu ON c.month = nu.month
   LEFT JOIN national_income ni ON YEAR(c.month) = ni.yr
 ),
--- State rows: unemployment + income (CPI and mortgage are national only)
 states AS (
   SELECT
     u.month AS date,
@@ -294,6 +304,16 @@ ORDER BY date;
 
 
 ## Semantic View (Cortex Analyst)
+
+**UI-Snowsight**: AI & ML → Cortex Analyst → **Create Semantic View**.
+- Select table: `HOL_DB.PUBLIC.ECONOMIC_INDICATORS`.
+- Click **Autopilot** to auto-generate dimensions, facts, and metrics from the table schema.
+- Review the generated YAML — check that dimensions (DATE, GEO_ID, GEO_NAME), facts (CPI_INDEX, INFLATION_PCT, etc.), and metrics are correct.
+- Add or edit descriptions to clarify business meaning.
+- Optionally add verified queries (known-good question → SQL pairs).
+- Save as `economic_semantic_view`.
+
+In this lab we create it via code (YAML below), but Autopilot is the fastest way to get started.
 
 ```sql
 -- Create the semantic view using YAML specification
@@ -371,6 +391,16 @@ SHOW SEMANTIC VIEWS IN SCHEMA hol_db.public;
 
 ## Cortex Agent
 
+**UI-Snowsight**: AI & ML → Cortex Agents → **+ Create**.
+- Name: `hol_economic_agent`
+- Model: change to **Gemini** (default may be different).
+- Tools: add Cortex Analyst tool → select `economic_semantic_view`.
+- Instructions: describe what the agent does, e.g. "Answer questions about US economic indicators including inflation, mortgage rates, unemployment by state, and income trends."
+- Warehouse: `hol_wh` (for query execution).
+- Test the agent in the preview pane before saving.
+
+In this lab we create it via SQL for reproducibility.
+
 ```sql
 -- Create a Cortex Agent backed by the economic indicators semantic view
 CREATE OR REPLACE AGENT hol_db.public.hol_economic_agent
@@ -412,7 +442,11 @@ Look at the response — it includes the generated SQL so you can see exactly wh
 ## MCP Server
 
 ```sql
--- MCP server exposing the Cortex Agent as a tool
+-- MCP server exposing the Cortex Agent as a tool (requires schema ownership → hol_role)
+USE ROLE hol_role;
+USE WAREHOUSE hol_wh;
+USE SCHEMA hol_db.public;
+
 CREATE OR REPLACE MCP SERVER hol_db.public.hol_mcp
   FROM SPECIFICATION $$
   tools:
@@ -423,42 +457,77 @@ CREATE OR REPLACE MCP SERVER hol_db.public.hol_mcp
       title: "Economic Indicators Agent"
   $$;
 
--- OAuth security integration for external MCP clients
+-- Grant MCP server usage to the consumer role (required for Gemini to discover tools)
+-- ALLOWED_ROLES_LIST must include the role used in the OAuth scope, otherwise
+-- Snowflake rejects it with "invalid role" even if the user has the role granted.
+USE ROLE ACCOUNTADMIN;
+
+GRANT USAGE ON MCP SERVER hol_db.public.hol_mcp TO ROLE end_user_role;
+
 CREATE OR REPLACE SECURITY INTEGRATION hol_mcp_oauth
   TYPE = OAUTH
   OAUTH_CLIENT = CUSTOM
   OAUTH_CLIENT_TYPE = 'CONFIDENTIAL'
   OAUTH_REDIRECT_URI = 'https://vertexaisearch.cloud.google.com/oauth-redirect'
+  ALLOWED_ROLES_LIST = ('END_USER_ROLE')
   ENABLED = TRUE;
 
--- Retrieve all credentials needed for Gemini Enterprise MCP connection
-WITH secrets AS (
+-- Get MCP server metadata (database, schema, name)
+DESCRIBE MCP SERVER hol_db.public.hol_mcp;
+SET mcp_qid = LAST_QUERY_ID();
+
+-- Get OAuth integration metadata (auth URL, token URL, client ID)
+DESCRIBE SECURITY INTEGRATION hol_mcp_oauth;
+SET int_qid = LAST_QUERY_ID();
+
+USE ROLE hol_role;
+USE WAREHOUSE hol_wh;
+USE SCHEMA hol_db.public;
+
+-- Retrieve all credentials for Gemini Enterprise MCP connection
+-- Values derived from DESCRIBE metadata — nothing hardcoded
+WITH mcp_meta AS (
+  SELECT "database_name", "schema_name", "name"
+  FROM TABLE(RESULT_SCAN($mcp_qid))
+),
+oauth_meta AS (
+  SELECT
+    MAX(CASE WHEN "property" = 'OAUTH_AUTHORIZATION_ENDPOINT' THEN "property_value" END) AS auth_endpoint,
+    MAX(CASE WHEN "property" = 'OAUTH_TOKEN_ENDPOINT' THEN "property_value" END) AS token_endpoint,
+    MAX(CASE WHEN "property" = 'OAUTH_CLIENT_ID' THEN "property_value" END) AS client_id
+  FROM TABLE(RESULT_SCAN($int_qid))
+),
+secrets AS (
   SELECT PARSE_JSON(SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('HOL_MCP_OAUTH')) AS s
 ),
-account_url AS (
-  SELECT 'https://' || CURRENT_ORGANIZATION_NAME() || '-' || CURRENT_ACCOUNT_NAME() || '.snowflakecomputing.com' AS base
+account_base AS (
+  -- Org-account URL format (required by Gemini Enterprise)
+  SELECT 'https://' || CURRENT_ORGANIZATION_NAME() || '-' || CURRENT_ACCOUNT_NAME()
+         || '.snowflakecomputing.com' AS url
 )
 SELECT field_name, value
 FROM (
-  SELECT 1 AS ord, 'MCP Server URL'   AS field_name, a.base || '/api/v2/cortex/mcp' AS value FROM account_url a
+  SELECT 1 AS ord, 'MCP Server URL' AS field_name,
+    ab.url || '/api/v2/databases/' || m."database_name" || '/schemas/' || m."schema_name" || '/mcp-servers/' || m."name" AS value
+    FROM account_base ab, mcp_meta m
   UNION ALL
-  SELECT 2, 'Auth URL',              a.base || '/oauth/authorize' FROM account_url a
+  SELECT 2, 'Auth URL', o.auth_endpoint FROM oauth_meta o
   UNION ALL
-  SELECT 3, 'Auth URL Params',       '' FROM account_url a
+  SELECT 3, 'Auth URL Params', '' FROM oauth_meta o
   UNION ALL
-  SELECT 4, 'Token URL',             a.base || '/oauth/token-request' FROM account_url a
+  SELECT 4, 'Token URL', o.token_endpoint FROM oauth_meta o
   UNION ALL
-  SELECT 5, 'Client ID',             s.s:OAUTH_CLIENT_ID::STRING FROM secrets s
+  SELECT 5, 'Client ID', o.client_id FROM oauth_meta o
   UNION ALL
-  SELECT 6, 'Client Secret',         s.s:OAUTH_CLIENT_SECRET::STRING FROM secrets s
+  SELECT 6, 'Client Secret', s.s:OAUTH_CLIENT_SECRET::STRING FROM secrets s
   UNION ALL
-  SELECT 7, 'Scopes',                'session:role:end_user_role' FROM secrets s
+  SELECT 7, 'Scopes', 'session:role:end_user_role' FROM secrets s
   UNION ALL
   SELECT 8, 'MCP Server Description', 'Snowflake Cortex Agent for US economic indicators (CPI, mortgage rates, unemployment, income)' FROM secrets s
   UNION ALL
-  SELECT 9, 'Agent Instructions',    'Use the hol-economic-agent tool to answer questions about US economic data including inflation, mortgage rates, unemployment by state, and income trends.' FROM secrets s
+  SELECT 9, 'Agent Instructions', 'Use the hol-economic-agent tool to answer questions about US economic data including inflation, mortgage rates, unemployment by state, and income trends.' FROM secrets s
   UNION ALL
-  SELECT 10, 'Data Connector Name',  'hol_cortex_gemini_economic_agent' FROM secrets s
+  SELECT 10, 'Data Connector Name', 'hol_cortex_gemini_economic_agent' FROM secrets s
 )
 ORDER BY ord;
 ```
@@ -469,7 +538,8 @@ ORDER BY ord;
 **UI-GCP**: Google Cloud Console → search "Gemini for Google Cloud" → **Data Connectors** → **Add Connector** → Custom MCP Server.
 - Fill in the fields using values from the MCP output above (server URL, client ID, client secret, scopes, etc.).
 - Complete the OAuth authorization flow when prompted.
-- Click **Enable Actions** to activate.
+- Click **Actions** and then "Reload Custom Actions" and log in with your workshop provided account.
+- Select the tool "hol-economic-agent" and then "Enable Actions" and confirm.
 
 Now open Gemini Enterprise chat and ask the same question:
 
