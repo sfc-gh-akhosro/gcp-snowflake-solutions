@@ -1,9 +1,10 @@
-author: Ali Khosro
+author: Ali Khosro (Snowflake), Bruce Sandell (Google)
 id: quickstart-iceberg-cortex-gemini
+language: en
 summary: Build an AI agent on Iceberg data with Snowflake Cortex and Gemini Enterprise via MCP
 categories: Getting-Started, Data-Engineering, AI-ML
 environments: web
-status: Hidden
+status: Published
 feedback link: https://github.com/Snowflake-Labs/sfguides/issues
 tags: Getting Started, Iceberg, Cortex, Gemini, MCP, Semantic View, Agents, GCP, Google Cloud
 
@@ -20,11 +21,11 @@ The key idea: define your business logic once, in the data layer, not in prompts
 
 > aside positive
 > 
-> This quickstart is also available as a [Snowflake Notebook](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/tree/main/hands-on-lab-cortex-gemini) that you can run directly in Snowsight Workspaces.
+> This quickstart is also available as a [Snowflake Notebook](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/tree/main/hands-on-lab-cortex-gemini) that you can run directly in Snowsight Workspaces. [Readme](./assets/readme.md) more info.
 
 ![Architecture](assets/arch-diagram.png)
 
-### What You Will Learn
+### What You Will Learn 
 - How to create Snowflake-managed Iceberg tables on GCS
 - How to build a Semantic View that grounds AI on business logic
 - How to create a Cortex Agent powered by Gemini
