@@ -11,19 +11,15 @@ tags: Getting Started, Iceberg, Cortex, Gemini, MCP, Semantic View, Agents, GCP,
 # Agentic AI for Your Lakehouse: Snowflake Cortex and Gemini Enterprise on Iceberg
 <!-- ------------------------ -->
 ## Overview
-Duration: 2
-
 We're going to build an AI agent that answers economic questions about the wellbeing of Americans — and make it available to anyone in the organization. The agent will live in Snowflake, but employees will talk to it from Gemini Enterprise, their everyday corporate AI assistant.
 
 We start from raw public data. We land it in an [Apache Iceberg](https://iceberg.apache.org/) table on your own GCS bucket. We teach an AI model what the data means through a Semantic View. And we wrap it all in a Cortex Agent powered by Gemini.
 
 The key idea: define your business logic once, in the data layer, not in prompts. That way every consumer — a chat interface, a BI dashboard, an external AI assistant — gets the same correct answer from the same governed data.
 
-> aside positive
-> 
-> This quickstart is also available as a [Snowflake Notebook](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/tree/main/hands-on-lab-cortex-gemini) that you can run directly in Snowsight Workspaces. [Readme](./assets/readme.md) more info.
+> **Tip:** This quickstart is also available as a [Snowflake Notebook](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/tree/main/hands-on-lab-cortex-gemini) that you can run directly in Snowsight Workspaces. [More info](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/assets/readme.md).
 
-![Architecture](assets/arch-diagram.png)
+![Architecture](assets/arch-diagram.svg)
 
 ### What You Will Learn 
 - How to create Snowflake-managed Iceberg tables on GCS
@@ -31,12 +27,14 @@ The key idea: define your business logic once, in the data layer, not in prompts
 - How to create a Cortex Agent powered by Gemini
 - How to expose the agent via MCP (Model Context Protocol)
 - How to connect Gemini Enterprise to Snowflake through MCP
+- How to connect Looker to the same Iceberg data for BI dashboards
 
 ### What You Will Build
 - An Apache Iceberg table on your GCS bucket with US economic indicators
 - A Semantic View defining dimensions, facts, and metrics
 - A Cortex Agent accessible from Snowflake CoWork and Gemini Enterprise
 - An MCP server with OAuth for secure cross-platform access
+- A Looker dashboard connected to the same Iceberg data
 
 ### Prerequisites
 - A [Snowflake account](https://signup.snowflake.com/) on GCP with `ACCOUNTADMIN` privileges
@@ -45,7 +43,6 @@ The key idea: define your business logic once, in the data layer, not in prompts
 
 <!-- ------------------------ -->
 ## Setup
-Duration: 5
 
 We need three environments for this lab:
 
@@ -53,11 +50,10 @@ We need three environments for this lab:
 |---|-------------|----------|
 | 1 | **Google Cloud Console** | Create a GCS bucket for Iceberg storage. Later, register the MCP connector in Gemini Enterprise. |
 | 2 | **Snowflake (Snowsight)** | Build everything: Iceberg tables, Semantic Views, Cortex Agents, and the MCP server. |
-| 3 | **Gemini Enterprise** | Talk to the agent from the corporate AI assistant. |
+| 3 | **Looker** | Connect a BI dashboard to the same Iceberg data. |
+| 4 | **Gemini Enterprise** | Talk to the agent from the corporate AI assistant. |
 
-> aside positive
-> 
-> Tip: Open each environment in a separate browser tab for easy switching.
+> **Tip:** Open each environment in a separate browser tab for easy switching.
 
 ### Workspace
 
@@ -93,6 +89,8 @@ BEGIN
   LET usr := CURRENT_USER();
   EXECUTE IMMEDIATE 'GRANT ROLE hol_role TO USER ' || :usr;
   EXECUTE IMMEDIATE 'GRANT ROLE end_user_role TO USER ' || :usr;
+  -- MCP OAuth sessions fail if the connecting user has no default warehouse
+  EXECUTE IMMEDIATE 'ALTER USER ' || :usr || ' SET DEFAULT_WAREHOUSE = ''hol_wh''';
 END;
 
 -- Builder privileges
@@ -132,7 +130,6 @@ SELECT CURRENT_ROLE() AS role, CURRENT_WAREHOUSE() AS wh,
 
 <!-- ------------------------ -->
 ## Marketplace
-Duration: 3
 
 We get our source data from Snowflake Marketplace. It lets teams access curated, live datasets instantly — you click "Get" and the data appears in your account. No ETL pipelines, no data copying.
 
@@ -159,7 +156,6 @@ SELECT 'IRS_INCOME', COUNT(*)
 
 <!-- ------------------------ -->
 ## Iceberg
-Duration: 10
 
 [Apache Iceberg](https://iceberg.apache.org/) is an open table format. Parquet data files and metadata sit in your own GCS bucket — you own them. Any engine that speaks Iceberg can read them directly: Snowflake, BigQuery, Managed Spark, or any Iceberg REST Catalog–compliant runtime. No copying between systems.
 
@@ -168,7 +164,7 @@ We use `CATALOG = 'SNOWFLAKE'`, which means Snowflake manages the table through 
 ### Create GCS Bucket
 
 **In Google Cloud Console**: Cloud Storage → **Create Bucket**.
-- Name: choose a unique name (e.g. `yourname_hol_iceberg`)
+- Name: `firstname_lastname_hol_0729`
 - Location: `Multi-region`
 - Leave everything else as default.
 
@@ -180,7 +176,7 @@ CREATE EXTERNAL VOLUME IF NOT EXISTS hol_gcs_vol
   STORAGE_LOCATIONS = ((
     NAME = 'hol-gcs'
     STORAGE_PROVIDER = 'GCS'
-    STORAGE_BASE_URL = 'gcs://<YOUR_BUCKET_NAME>/iceberg/'
+    STORAGE_BASE_URL = 'gcs://{{bucket_name}}/iceberg/'
   ));
 
 -- Describe to get the service account
@@ -323,16 +319,17 @@ SELECT * FROM states
 ORDER BY date, geo_id;
 ```
 
-### Explore Iceberg Data
+### Explore Iceberg Data and Metadata
 
 **In Google Cloud Console**: Your bucket → explore the files.
 - You'll see Parquet data files and a metadata folder with JSON files.
 
-The Iceberg table uses `CATALOG = 'SNOWFLAKE'` — all data and metadata is in your own bucket. Every engine reads and writes directly while the catalog (Snowflake Horizon) provides governance and security.
+Look at the Iceberg table definition above and identify the catalog we used (`CATALOG = 'SNOWFLAKE'`). All data and metadata is in your own bucket — not owned by Snowflake, BigQuery, or any other vendor. Every engine reads and writes directly while a catalog (here Snowflake Horizon) provides governance and security.
+
+This is the cornerstone of a modern data platform: one source of truth in a datalake with high data gravity. All services are drawn to this data to perform their tasks.
 
 <!-- ------------------------ -->
 ## Data Profiling
-Duration: 2
 
 Query the Iceberg table to see national economic indicators:
 
@@ -351,13 +348,10 @@ WHERE geo_id = 'country/USA'
 ORDER BY date;
 ```
 
-> aside positive
-> 
-> In Snowsight, click the **Chart** tab to visualize trends over time, or click column headers for quick profiling stats (min, max, distribution).
+> **Tip:** In Snowsight, click the **Chart** tab to visualize trends over time, or click column headers for quick profiling stats (min, max, distribution).
 
 <!-- ------------------------ -->
 ## Cortex Agent
-Duration: 10
 
 We have a clean Iceberg table. Any analyst can query it with SQL. But that doesn't make it AI-ready.
 
@@ -369,9 +363,7 @@ That's what a **Semantic View** does. You define your business logic once — in
 
 The Semantic View is the grounding layer for our agent. We define dimensions (date, geography), facts (CPI, mortgage rate, unemployment, income), and metrics (year-over-year inflation, average mortgage rate by state).
 
-> aside positive
-> 
-> **UI Alternative**: In Snowsight, go to AI & ML → Cortex Analyst → **Create Semantic View** → select your table → click **Autopilot** to auto-generate the YAML.
+> **UI Alternative:** In Snowsight, go to AI & ML → Cortex Analyst → **Create Semantic View** → select your table → click **Autopilot** to auto-generate the YAML.
 
 ```sql
 CALL SYSTEM$CREATE_SEMANTIC_VIEW_FROM_YAML(
@@ -449,9 +441,7 @@ SHOW SEMANTIC VIEWS IN SCHEMA hol_db.public;
 
 A Cortex Agent takes a natural-language question and passes it to Cortex Analyst. Cortex Analyst uses the Semantic View to generate correct SQL, executes it, and returns a grounded answer with supporting data. We use Gemini as the reasoning model.
 
-> aside positive
-> 
-> **UI Alternative**: In Snowsight, go to AI & ML → Cortex Agents → **+ Create** → select your semantic view → choose Gemini as the model.
+> **UI Alternative:** In Snowsight, go to AI & ML → Cortex Agents → **+ Create Agent** → select your semantic view → choose Gemini as the model.
 
 ```sql
 -- Create a Cortex Agent backed by the economic indicators semantic view
@@ -493,7 +483,6 @@ The response includes the generated SQL so you can see exactly what query was ex
 
 <!-- ------------------------ -->
 ## MCP Server
-Duration: 8
 
 So far our agent lives inside Snowflake. But what if employees want to ask it questions from Gemini Enterprise, or from another AI tool?
 
@@ -592,13 +581,10 @@ FROM (
 ORDER BY ord;
 ```
 
-> aside negative
-> 
-> Save the output — you'll need these values to register the connector in Gemini Enterprise.
+> **Note:** Save the output — you'll need these values to register the connector in Gemini Enterprise.
 
 <!-- ------------------------ -->
 ## Gemini Enterprise
-Duration: 5
 
 Gemini Enterprise is Google Cloud's corporate AI assistant — the chat interface employees across the organization already use daily.
 
@@ -631,12 +617,30 @@ ALTER ACCOUNT UNSET NETWORK_POLICY;
 **In Google Cloud Console**: IAM & Admin → Organization Policies → search `disableCustomMcpServerConnector` → Enforcement: **Off** → Save. Retry connector setup.
 
 <!-- ------------------------ -->
+## Looker
+
+The same Iceberg data that powers the AI agent also feeds traditional BI. Looker connects directly to the Snowflake table — no additional copies, no separate pipeline. One data product serves both governed dashboards and AI chat.
+
+**In Looker**: Admin → Database → Connections → add Snowflake connection.
+- Use lab credentials, point to `HOL_DB.PUBLIC`.
+- Create LookML project on `ECONOMIC_INDICATORS`.
+- Build Explore + Dashboard.
+
+Please follow [Looker instructions](https://docs.google.com/document/d/14DwWTrCz4YLreXNiYfJ3cI86MUNT44lj_yXlIq__pwg/edit?usp=sharing&resourcekey=0-s31XT4gARcUOk4CX6ZYWvw)
+
+We would like to:
+- Log in to looker (given account, username, password)
+- Create a secure connection to your Snowflake account
+- Create a project and database and explore Looker
+- Get familiar with LookML (which define the semantic model of your data)
+- Talk to your Snowflake data
+
+<!-- ------------------------ -->
 ## Conclusion And Resources
-Duration: 1
 
 Let's step back and look at what we built.
 
-One copy of data on open Iceberg in your GCS bucket. A Semantic View that teaches AI what the data means. A Cortex Agent powered by Gemini that turns questions into governed SQL. And we consume it from Snowflake CoWork, Gemini Enterprise, and any MCP client — all pointing at the same source of truth.
+One copy of data on open Iceberg in your GCS bucket. A Semantic View that teaches AI what the data means. A Cortex Agent powered by Gemini that turns questions into governed SQL. And we consume it from Snowflake CoWork, Gemini Enterprise, Looker, and any MCP client — all pointing at the same source of truth.
 
 No data copies between systems. No custom integrations for each surface. No hallucination from ungrounded prompts. Build it once, consume it everywhere.
 
@@ -647,6 +651,7 @@ No data copies between systems. No custom integrations for each surface. No hall
 - How to build a Cortex Agent with Gemini as the reasoning model
 - How to expose an agent via MCP with OAuth security
 - How to connect Gemini Enterprise to Snowflake through MCP
+- How to connect Looker to the same Iceberg data for BI dashboards
 
 ### Related Resources
 - [Snowflake Cortex Agents Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)
@@ -664,8 +669,7 @@ USE ROLE ACCOUNTADMIN;
 DROP DATABASE IF EXISTS hol_db;
 DROP WAREHOUSE IF EXISTS hol_wh;
 DROP INTEGRATION IF EXISTS hol_mcp_oauth;
+DROP EXTERNAL VOLUME IF EXISTS hol_gcs_vol;
 DROP ROLE IF EXISTS hol_role;
 DROP ROLE IF EXISTS end_user_role;
--- External volume kept (GCS permissions take time to set up):
--- DROP EXTERNAL VOLUME IF EXISTS hol_gcs_vol;
 ```
