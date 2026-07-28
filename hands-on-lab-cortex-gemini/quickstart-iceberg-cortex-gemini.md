@@ -20,7 +20,7 @@ We start from raw public data. We land it in an [Apache Iceberg](https://iceberg
 
 The key idea: define your business logic once, in the data layer, not in prompts. That way every consumer — a chat interface, a BI dashboard, an external AI assistant — gets the same correct answer from the same governed data.
 
-> **Tip:** This quickstart is also available as a [Snowflake Notebook](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/tree/main/hands-on-lab-cortex-gemini) that you can run directly in Snowsight Workspaces. [More info](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/README.md).
+> **Tip:** This quickstart is also available as a [Snowflake Notebook](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/hol-cortex-gemini.ipynb) that you can run directly in Snowsight Workspaces. [More info](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/README.md).
 
 ![Architecture](assets/arch-diagram.svg)
 
@@ -48,11 +48,15 @@ The key idea: define your business logic once, in the data layer, not in prompts
 
 ## Setup
 
-Follow this [how-to setup video](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/assets/how-to-setup-gcp-snowflake-workshop.mov) to set up your environments.
 
 We need three environments for this lab:
 
 > Tip: Use Incognito mode or create a temporary Chrome profile (top right of Chrome window > Profile icon > Add > Stay signed out > name: "workshop") to manage all lab accounts. Qwiklabs and DataOps will provide URLs for your GCP and Snowflake accounts. Open all account URLs in this "workshop" profile or Incognito window.
+
+If you are using official workshop that Qwiklabs provides your GCP account and DataOps provides your Snowflake account, follow the below video and instructions.
+
+Follow this [how-to setup video](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/assets/how-to-setup-gcp-snowflake-workshop.mov) to set up your environments.
+
 
 In your main Chrome profile:
 
@@ -784,7 +788,7 @@ No data copies between systems. No custom integrations for each surface. No hall
 - [Apache Iceberg on Snowflake](https://docs.snowflake.com/en/user-guide/tables-iceberg)
 - [Semantic Views](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/semantic-view)
 - [MCP Servers in Snowflake](https://docs.snowflake.com/en/user-guide/snowflake-cortex/mcp-server)
-- [Source Notebook on GitHub](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/tree/main/hands-on-lab-cortex-gemini)
+- [Source Notebook on GitHub](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/hol-cortex-gemini.ipynb)
 
 ### Cleanup
 

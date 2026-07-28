@@ -2,7 +2,7 @@
 
 A hands-on lab that builds an AI-ready data product on Apache Iceberg — from raw Marketplace data to a Cortex Agent consumed by Snowflake CoWork, Gemini Enterprise (via MCP), and Looker dashboards. One copy of data, one agent, many surfaces.
 
-This lab loosely follows the architecture described in [blog-post.md](./blog-post.md).
+This lab loosely follows the architecture described in [blog-post.md](./assets/blog-post.md).
 
 If you are looking for how to set up MCP connection between Snowflake Cortex and Gemini Enterprise, see the [MCP guide](./mcp-server-setup-guide.md).
 
@@ -21,25 +21,38 @@ If you are looking for how to set up MCP connection between Snowflake Cortex and
 
 Open **`hol-cortex-gemini.ipynb`** in a Snowflake Workspace and run cells top-to-bottom. The notebook is self-contained — narration, code, and UI pointers all in one place.
 
-## Contribute 
+New to the environment setup? Start with the [how-to setup video](./assets/how-to-setup-gcp-snowflake-workshop.mov).
+
+## Contribute
 
 - main-prompt is human input only, it helps ai to create narration
 - narration should be reviewed and confirmed by human. main prompt sets the tone and story.
 - based on narration and main prompt, ai created how-to wich included UI pointers and code blocks.
 - you can provide proofreads input for the final outcome.
 
+### Root files
 
 | File | Purpose |
 |------|---------|
-| `hol-cortex-gemini.ipynb` | **The lab notebook** — run this |
-| `quickstart-iceberg-cortex-gemini.md` | Self-service quickstart (Snowflake sfguide format) |
+| `hol-cortex-gemini.ipynb` | **The lab notebook** — run this. Source of truth for all SQL. |
+| `quickstart-iceberg-cortex-gemini.md` | Self-service quickstart (Snowflake sfguide format), derived from the notebook |
 | `how-to.md` | Workshop how-to with UI pointers and code blocks |
-| `blog-post.md` | Conceptual blog post explaining the architecture and "why" |
 | `mcp-server-setup-guide.md` | Gemini Enterprise MCP connection to Snowflake Cortex |
 | `main-prompt.md` | Human-written input prompt used to guide AI content generation |
 | `narration.md` | Pure narrative text for each section (no code, no UI) |
 | `proofreads.md` | Feedback and iteration notes — edit this to give AI direction |
-| `assets/` | Supporting assets (SVG diagram, setup video, diagrams source) |
+| `README.md` | This file |
+
+### `assets/`
+
+| File | Purpose |
+|------|---------|
+| `arch-diagram.svg` | Architecture diagram. The only asset referenced by the published quickstart. |
+| `blog-post.md` | Conceptual blog post explaining the architecture and "why" — the narrative source this lab implements |
+| `diagrams.md` | Graphviz DOT source for the architecture diagram, plus the notebook's diagram helper code |
+| `how-to-setup-gcp-snowflake-workshop.mov` | Environment setup walkthrough video (stored via git-lfs — see `.gitattributes`) |
+
+> **Note on publishing:** when copying this guide into `Snowflake-Labs/sfquickstarts`, only `quickstart-iceberg-cortex-gemini.md` and `assets/arch-diagram.svg` should ship. Non-image assets are not uploaded to snowflake.com, so anything else the guide references must be linked from GitHub instead.
 
 ## Prerequisites
 

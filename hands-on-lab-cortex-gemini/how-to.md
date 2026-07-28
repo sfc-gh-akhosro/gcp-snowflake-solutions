@@ -5,11 +5,13 @@ Code cells + brief but effective UI pointers, section by section. Follows ./narr
 
 ## Setup
 
-Follow this [how-to setup video](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/assets/how-to-setup-gcp-snowflake-workshop.mov) to set up your environments.
-
 We need three environments for this lab:
 
 > Tip: Use Incognito mode or create a temporary Chrome profile (top right of Chrome window > Profile icon > Add > Stay signed out > name: "workshop") to manage all lab accounts. Qwiklabs and DataOps will provide URLs for your GCP and Snowflake accounts. Open all account URLs in this "workshop" profile or Incognito window.
+
+If you are using official workshop that Qwiklabs provides your GCP account and DataOps provides your Snowflake account, follow the below video and instructions.
+
+Follow this [how-to setup video](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/assets/how-to-setup-gcp-snowflake-workshop.mov) to set up your environments.
 
 In your main Chrome profile:
 
