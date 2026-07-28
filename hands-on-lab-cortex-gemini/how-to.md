@@ -5,6 +5,8 @@ Code cells + brief but effective UI pointers, section by section. Follows ./narr
 
 ## Setup
 
+Follow this [how-to setup video](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/assets/how-to-setup-gcp-snowflake-workshop.mov) to set up your environments.
+
 We need three environments for this lab:
 
 > Tip: Use Incognito mode or create a temporary Chrome profile (top right of Chrome window > Profile icon > Add > Stay signed out > name: "workshop") to manage all lab accounts. Qwiklabs and DataOps will provide URLs for your GCP and Snowflake accounts. Open all account URLs in this "workshop" profile or Incognito window.
@@ -94,6 +96,8 @@ BEGIN
   LET usr := CURRENT_USER();
   EXECUTE IMMEDIATE 'GRANT ROLE hol_role TO USER ' || :usr;
   EXECUTE IMMEDIATE 'GRANT ROLE end_user_role TO USER ' || :usr;
+  -- MCP OAuth sessions (e.g., Gemini Enterprise) fail to initialize if the connecting user's DEFAULT_WAREHOUSE is null.
+  EXECUTE IMMEDIATE 'ALTER USER ' || :usr || ' SET DEFAULT_WAREHOUSE = ''hol_wh''';
 END;
 
 -- Builder privileges
@@ -651,10 +655,10 @@ The same Iceberg data that powers the AI agent also feeds traditional BI. Looker
 Please follow [Looker instructions](https://docs.google.com/document/d/14DwWTrCz4YLreXNiYfJ3cI86MUNT44lj_yXlIq__pwg/edit?usp=sharing&resourcekey=0-s31XT4gARcUOk4CX6ZYWvw)
 
 We would like to:
-- Log in to looker (given account, username, password)
+- Log in to Looker (given account, username, password)
 - Create a secure connection to your Snowflake account
 - Create a project and database and explore Looker
-- Get familiar with LookML (which define the semantic model of your data)
+- Get familiar with LookML (which defines the semantic model of your data)
 - Talk to your Snowflake data
 
 ## Wrap-up
@@ -688,20 +692,26 @@ ALTER ACCOUNT UNSET NETWORK_POLICY;
 ```sql
 USE ROLE ACCOUNTADMIN;
 
+-- Drop every object the workshop roles own BEFORE dropping the roles themselves.
+-- hol_role owns hol_gcs_vol, so dropping the roles first leaves the external
+-- volume orphaned and the cleanup does not run clean on a copy-paste.
+
 -- Drop database first (cascades all objects inside: tables, views, agents, MCP servers)
 DROP DATABASE IF EXISTS hol_db;
 
+-- The external volume can only be dropped after the Iceberg tables that reference it.
+-- Dropping it means redoing the GCS bucket IAM binding if you run the lab again.
+DROP EXTERNAL VOLUME IF EXISTS hol_gcs_vol;
+
 DROP WAREHOUSE IF EXISTS hol_wh;
 DROP INTEGRATION IF EXISTS hol_mcp_oauth;
+
+-- Roles last, once nothing they own is left
 DROP ROLE IF EXISTS hol_role;
 DROP ROLE IF EXISTS end_user_role;
 
 -- Re-enable network policy if it was disabled
 -- ALTER ACCOUNT SET NETWORK_POLICY = ACCOUNT_VPN_POLICY_SE;
-
--- The external volume can only be dropped after the Iceberg tables that reference it.
--- Dropping it means redoing the GCS bucket IAM binding if you run the lab again.
-DROP EXTERNAL VOLUME IF EXISTS hol_gcs_vol;
 
 -- The Iceberg data/metadata files still sit in your GCS bucket.
 -- Delete them in Google Cloud Console (Cloud Storage -> your bucket), or:
