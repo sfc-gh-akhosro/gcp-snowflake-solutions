@@ -482,8 +482,10 @@ Snowflake CoWork is the chat surface for business users — no SQL knowledge nee
 - In CoWork, go to bottom left profile, click setting, and switch role to `end_user_role`, warehouse: `hol_wh`. Done.
 - You should be able to see **hol_economic_agent** in the agent list (control buttons of the CoWork chat).
 - Ask: *"How has the 30-year mortgage rate changed relative to inflation since 2020?"*
+- Ask: *"Tell the economic story of California vs Texas over the last 10 years using all available indicators."*
+- Ask: *"What did the COVID shock look like in data — unemployment spike, rate crash, inflation surge — and how long did each phase last?"*
 
-The response includes the generated SQL so you can see exactly what query was executed. Same agent, same data, different role — a chat-based surface instead of a notebook.
+The responses include the generated SQL so you can see exactly what queries were executed. Same agent, same data, different role — a chat-based surface instead of a notebook.
 
 <!-- ------------------------ -->
 ## MCP Server
