@@ -82,6 +82,13 @@ CREATE ROLE IF NOT EXISTS hol_role;
 -- Consumer role: can only use the agent (CoWork, Gemini Enterprise)
 CREATE ROLE IF NOT EXISTS end_user_role;
 
+-- Attach both roles to the role hierarchy.
+-- hol_role OWNS everything we build, so without this an admin has no path to
+-- those objects once the workshop user goes away -- and cleanup becomes impossible.
+-- ACCOUNTADMIN inherits SYSADMIN, so it can always do whatever hol_role can do.
+GRANT ROLE hol_role      TO ROLE SYSADMIN;
+GRANT ROLE end_user_role TO ROLE SYSADMIN;
+
 -- Grant both roles to whoever is running this notebook
 BEGIN
   LET usr := CURRENT_USER();
@@ -167,7 +174,7 @@ Let's create the bucket in Google Cloud Console, give Snowflake write access, an
 
 ```sql
 -- Create an external volume pointing to your GCS bucket
-CREATE EXTERNAL VOLUME IF NOT EXISTS hol_gcs_vol
+CREATE OR REPLACE EXTERNAL VOLUME hol_gcs_vol
   STORAGE_LOCATIONS = ((
     NAME = 'hol-gcs'
     STORAGE_PROVIDER = 'GCS'
@@ -679,18 +686,24 @@ ALTER ACCOUNT UNSET NETWORK_POLICY;
 ```sql
 USE ROLE ACCOUNTADMIN;
 
--- Drop database (cascades all objects inside: tables, views, agents, MCP servers)
+-- Drop database first (cascades all objects inside: tables, views, agents, MCP servers)
 DROP DATABASE IF EXISTS hol_db;
+
 DROP WAREHOUSE IF EXISTS hol_wh;
 DROP INTEGRATION IF EXISTS hol_mcp_oauth;
 DROP ROLE IF EXISTS hol_role;
 DROP ROLE IF EXISTS end_user_role;
 
--- NOTE: hol_gcs_vol is kept — GCS bucket permissions take time to set up
--- To drop it manually: DROP EXTERNAL VOLUME IF EXISTS hol_gcs_vol;
-
 -- Re-enable network policy if it was disabled
 -- ALTER ACCOUNT SET NETWORK_POLICY = ACCOUNT_VPN_POLICY_SE;
+
+-- The external volume can only be dropped after the Iceberg tables that reference it.
+-- Dropping it means redoing the GCS bucket IAM binding if you run the lab again.
+DROP EXTERNAL VOLUME IF EXISTS hol_gcs_vol;
+
+-- The Iceberg data/metadata files still sit in your GCS bucket.
+-- Delete them in Google Cloud Console (Cloud Storage -> your bucket), or:
+--   gcloud storage rm --recursive gs://<your-bucket>/**
 
 SHOW ROLES LIKE '%HOL%';
 ```

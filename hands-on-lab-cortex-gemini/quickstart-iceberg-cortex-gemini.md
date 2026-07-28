@@ -84,6 +84,10 @@ CREATE ROLE IF NOT EXISTS hol_role;
 -- Consumer role: can only use the agent (CoWork, Gemini Enterprise)
 CREATE ROLE IF NOT EXISTS end_user_role;
 
+-- Attach both roles to the role hierarchy.
+GRANT ROLE hol_role      TO ROLE SYSADMIN;
+GRANT ROLE end_user_role TO ROLE SYSADMIN;
+
 -- Grant both roles to whoever is running this notebook
 BEGIN
   LET usr := CURRENT_USER();
@@ -172,7 +176,7 @@ We use `CATALOG = 'SNOWFLAKE'`, which means Snowflake manages the table through 
 
 ```sql
 -- Create an external volume pointing to your GCS bucket
-CREATE EXTERNAL VOLUME IF NOT EXISTS hol_gcs_vol
+CREATE OR REPLACE EXTERNAL VOLUME hol_gcs_vol
   STORAGE_LOCATIONS = ((
     NAME = 'hol-gcs'
     STORAGE_PROVIDER = 'GCS'
@@ -666,10 +670,16 @@ When you're done, run this to remove all lab objects:
 
 ```sql
 USE ROLE ACCOUNTADMIN;
+
+-- Drop database first (cascades all objects inside: tables, views, agents, MCP servers)
 DROP DATABASE IF EXISTS hol_db;
+
 DROP WAREHOUSE IF EXISTS hol_wh;
 DROP INTEGRATION IF EXISTS hol_mcp_oauth;
-DROP EXTERNAL VOLUME IF EXISTS hol_gcs_vol;
 DROP ROLE IF EXISTS hol_role;
 DROP ROLE IF EXISTS end_user_role;
+
+-- The external volume can only be dropped after the Iceberg tables that reference it.
+-- Dropping it means redoing the GCS bucket IAM binding if you run the lab again.
+DROP EXTERNAL VOLUME IF EXISTS hol_gcs_vol;
 ```
