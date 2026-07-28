@@ -79,5 +79,4 @@ To learn about the data that is available, you can ask Conversation Analytics fo
 <img src="./assets/looker5.png" align=left height=500/>
 
 Using some of the questions provided in the previous step, test Conversational Analytics out for yourself.  Feel free to think of some of your own questions as well.  Remember to click the “New Conversation” button on the right when you are ready to move on to a new topic.  
-![looker 5](./assets/looker5.png)
 
