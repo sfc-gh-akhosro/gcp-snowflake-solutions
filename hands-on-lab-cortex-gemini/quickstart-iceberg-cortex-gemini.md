@@ -444,15 +444,13 @@ ORDER BY date;
 
 <!-- ------------------------ -->
 
-## Cortex
+## Semantic View
 
 We have a clean Iceberg table. Any analyst can query it with SQL. But that doesn't make it AI-ready.
 
 Here's the gap: when an LLM sees column names like `CPI_INDEX` or `GEO_ID`, it guesses what they mean. It guesses wrong. We need to tell it which columns are dimensions, which are facts, how metrics are calculated, and what kinds of questions this table can answer.
 
 That's what a Semantic View does. You define your business logic once — in the data layer, not scattered across prompts — and every AI consumer inherits the same correct definitions.
-
-### Semantic View
 
 The Semantic View is the grounding layer for our agent. We define dimensions (date, geography), facts (CPI, mortgage rate, unemployment, income), and metrics (year-over-year inflation, average mortgage rate by state).
 
