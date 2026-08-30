@@ -11,7 +11,7 @@ We need three environments for this lab:
 
 If you are using official workshop that Qwiklabs provides your GCP account and DataOps provides your Snowflake account, follow the below video and instructions.
 
-Follow this [how-to setup video](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/blob/main/hands-on-lab-cortex-gemini/assets/how-to-setup-gcp-snowflake-workshop.mov) to set up your environments.
+Follow this [how-to setup video](https://github.com/sfc-gh-akhosro/gcp-snowflake-solutions/raw/refs/heads/main/hands-on-lab-cortex-gemini/assets/how-to-setup.mp4) to set up your environments.
 
 In your main Chrome profile:
 
