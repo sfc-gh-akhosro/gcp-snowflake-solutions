@@ -115,7 +115,7 @@ digraph catalog_federation {
         fontname="Helvetica"
         fontsize=12
 
-        BLM [label="BigLake Metastore"]
+        BLM [label="GCP Lakehouse \n Runtime Catalog"]
         BQ  [label="BigQuery Engine"]
     }
 
@@ -134,7 +134,8 @@ digraph catalog_federation {
     
     HZ -> SF
     BLM -> BQ
-}```
+}
+```
 
 The result is a fully open, interoperable data platform: all engines read and write directly from customer GCS with no ETL between systems, each team picks the best tool for the job—Spark for ETL, BigQuery for ad-hoc, Snowflake for governed analytics, Gemini for AI—and the catalog layer enforces unified governance across all of them. **No data movement. No vendor lock-in. One copy of data, many engines, unified governance, enforced security.**
 

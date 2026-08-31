@@ -9,7 +9,7 @@ All diagram-related code for the notebook.
 ```dot
 digraph cortex_stack {
     rankdir=LR
-    splines=ortho;
+    //splines=ortho;
     graph [fontname="Helvetica", bgcolor="transparent", pad=0.4 style=dashed]
     node  [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box,
            fillcolor="#BBDEFB", color="#1565C0"]
@@ -22,8 +22,19 @@ digraph cortex_stack {
     
     subgraph cluster_exploration {
         label="Explore"
-        looker warehouse explore
+         warehouse explore
     }
+    
+    subgraph cluster_context {
+        label="Business Logic Context"
+        analyst
+    }
+    
+    subgraph cluster_agent {
+        label="Agentic Intelligence"
+        agent
+    }
+
 
     marketplace [label="Snowflake Marketplace" shape=record]
     horizon [shape=record label="Federated Catalogs | {Snowflake \n Horizon | Lakehouse \n Runtime Catalog}"]
@@ -34,7 +45,6 @@ digraph cortex_stack {
     agent   [label="Cortex Agents \n (Powered by Gemini)"]
     cowork  [label="CoWork \n (Insights and Reports)"]
     gemini  [label="Gemini Enterprise \n (Corporate AI Hub)"  fillcolor="#ddffdd"]
-    looker  [label="Looker Dashboard" fillcolor="#ddffdd" ]
     coco    [label="CoCo \n (Agentic Assistent)"]
 
     horizon -> iceberg [xlabel="manages"  constraint=false]
@@ -42,7 +52,6 @@ digraph cortex_stack {
 
     iceberg -> warehouse
     warehouse -> analyst
-    looker -> warehouse [dir=back  constraint=false]
     warehouse -> explore [ constraint=false]
 
     analyst -> agent

@@ -6,7 +6,7 @@ To ensure a smooth learning experience, please complete the following environmen
 
 how to setup video illustrated the following instructions.
 
-  - Registration: Visit https://go.dataops.live/<event-name> to register for your designated Snowflake account.
+  - Registration: Visit https://go.dataops.live/gemini-cortex-workshop-virtual to register for your designated Snowflake account.
   - Account Access: Once registered, sign in to retrieve your Snowflake account URL, username, and password.
   - Environment Setup: Click on "Lab Instructions" and follow the detailed guide to configure your environment.
    - You will guided to go to https://explore.qwiklabs.com/, Sign In with your registration email, and start the google account inside your workshop.
@@ -14,3 +14,4 @@ how to setup video illustrated the following instructions.
 Please follow this video for how to setup: 
 
 Best regards,
+

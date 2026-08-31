@@ -22,10 +22,9 @@ Follow this [how-to setup video](https://github.com/sfc-gh-akhosro/gcp-snowflake
 
 
 
-We need three environments for this lab:
+We need two environments for this lab:
 - **Google Cloud**: We will create a GCS bucket for Iceberg storage and later use Gemini Enterprise to interact with our agent.
 - **Snowflake**: This is where we will build everything: Iceberg tables, Semantic Views, Cortex Agents, and the MCP server.
-- **Looker**: We will connect a BI dashboard to the same Iceberg data.
 
 You should now have two Chrome windows: one with your personal/corporate profile, and one with your incognito/guest profile.
 
@@ -43,7 +42,6 @@ In your **Incognito window or temporary "guest" Chrome**:
 
 ### I. **GCP Environment**
 * Use the Qwiklabs URL to open your provisioned GCP console, which we will use to set up GCS buckets.
-* You can also use `Cloud Shell` (located on the top right bar) as a terminal connected directly to your GCP account if scripting is needed.
 
 > You will create a GCS bucket for the Iceberg tables during the course. Please remember to use `firstname_lastname_hol_0831` naming pattern for your bucket name when asked.
 
@@ -68,8 +66,3 @@ You can also access this Notebook through: Projects > Workspaces > open the shar
 * Open a second Snowflake tab using the DataOps URL so you can explore the UI during the workshop.
 * From the left panel, locate Cortex Agents, Analyst, Snowflake Marketplace, Database Explorer, Workspaces, dbt Projects, Streamlit, Openflow, and Dynamic Tables.
 * Feel free to explore Snowflake before the workshop begins.
-
-
-### IV. **Looker** for BI
-* Login information will be provided during the workshop.
-
