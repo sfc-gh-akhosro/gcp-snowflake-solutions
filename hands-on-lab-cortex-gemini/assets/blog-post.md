@@ -46,10 +46,10 @@ digraph lakehouse {
     rankdir=TD;
     splines=curved;
     
-    graph [fontname="Helvetica", bgcolor="transparent", pad=0.4]
-    node  [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box,
-           fillcolor="#ddeeff", color="#1565C0"]
-    edge  [fontname="Helvetica", fontsize=9, color="#555555", arrowsize=0.7]
+    graph [fontname="Helvetica", bgcolor="transparent", pad=0.4 style=dashed fontsize=14]
+    node  [fontname="Helvetica", fontsize=12, style="filled,rounded", shape=box,
+           fillcolor="#BBDEFB", color="#1565C0"]
+    edge  [fontname="Helvetica", fontsize=10, color="#555555", arrowsize=0.7]
 
     // Catalog
     CAT [label="Catalog\n(IRC-Compliant)"]
@@ -59,12 +59,12 @@ digraph lakehouse {
 
     // Engines
     SF    [label="Snowflake"]
-    BQ    [label="BigQuery"]
     Spark [label="Spark / Dataproc"]
     Other [label="Trino / Flink / ..."]
+    BQ    [label="BigQuery"]
 
     // Catalog -> Engines
-    CAT -> {SF BQ Spark Other} [label="IRC"]
+    CAT -> {SF Spark Other BQ} [label="IRC"]
 
     // Engines -> Storage
     {SF BQ Spark Other} -> GCS [label="Read/Write", style=dashed]
@@ -88,10 +88,11 @@ digraph catalog_federation {
     rankdir=TD
     nodesep=1
     splines=true;
-    graph [fontname="Helvetica", bgcolor="transparent", pad=0.4, compound=true]
-    node  [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box,
-           fillcolor="#ddeeff", color="#1565C0"]
-    edge  [fontname="Helvetica", fontsize=9, color="#555555", arrowsize=0.7]
+    
+    graph [fontname="Helvetica", bgcolor="transparent", pad=0.4 style=dashed fontsize=14]
+    node  [fontname="Helvetica", fontsize=12, style="filled,rounded", shape=box,
+           fillcolor="#BBDEFB", color="#1565C0"]
+    edge  [fontname="Helvetica", fontsize=10, color="#555555", arrowsize=0.7]
     
     
 
@@ -101,7 +102,7 @@ digraph catalog_federation {
         style=dashed
         color="#999999"
         fontname="Helvetica"
-        fontsize=12
+        fontsize=13
 
         HZ [label="Horizon Catalog"]
         SF [label="Snowflake Engine"]
@@ -113,7 +114,7 @@ digraph catalog_federation {
         style=dashed
         color="#999999"
         fontname="Helvetica"
-        fontsize=12
+        fontsize=13
 
         BLM [label="GCP Lakehouse \n Runtime Catalog"]
         BQ  [label="BigQuery Engine"]
@@ -177,10 +178,11 @@ The result is not just an open lakehouse—it is an AI-ready open lakehouse wher
 digraph cortex_stack {
     rankdir=LR
     splines=ortho;
-    graph [fontname="Helvetica", bgcolor="transparent", pad=0.4]
-    node  [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box,
+    
+    graph [fontname="Helvetica", bgcolor="transparent", pad=0.4 style=dashed fontsize=14]
+    node  [fontname="Helvetica", fontsize=12, style="filled,rounded", shape=box,
            fillcolor="#BBDEFB", color="#1565C0"]
-    edge  [fontname="Helvetica", fontsize=9, color="#555555", arrowsize=0.7]
+    edge  [fontname="Helvetica", fontsize=10, color="#555555", arrowsize=0.7]
 
     horizon [shape=record label="Federated Catalogs | {Horizon | Metastore}"]
     
@@ -196,8 +198,10 @@ digraph cortex_stack {
     horizon -> iceberg [label="manages"]
     iceberg -> analyst
     analyst -> agent
+
+    agent -> cowork
     agent -> gemini [label="MCP"]
-    agent -> {cowork coco}
+    agent -> coco
     
     subgraph cluster_end_user {
         gemini

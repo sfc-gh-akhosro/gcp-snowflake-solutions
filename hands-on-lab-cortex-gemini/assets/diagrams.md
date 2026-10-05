@@ -9,40 +9,51 @@ All diagram-related code for the notebook.
 ```dot
 digraph cortex_stack {
     rankdir=LR
-    //splines=ortho;
-    graph [fontname="Helvetica", bgcolor="transparent", pad=0.4 style=dashed]
-    node  [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box,
+    splines=ortho
+
+    graph [fontname="Helvetica", bgcolor="transparent", pad=0.4 style=dashed fontsize=14]
+    node  [fontname="Helvetica", fontsize=12, style="filled,rounded", shape=box,
            fillcolor="#BBDEFB", color="#1565C0"]
-    edge  [fontname="Helvetica", fontsize=14, color="#555555", arrowsize=0.7]
+    edge  [fontname="Helvetica", fontsize=10, color="#555555", arrowsize=0.7]
     
-    subgraph cluster_data {
-        label = "Extract"
-        marketplace iceberg horizon
-    }
-    
-    subgraph cluster_exploration {
-        label="Explore"
-         warehouse explore
-    }
-    
-    subgraph cluster_context {
-        label="Business Logic Context"
-        analyst
-    }
-    
-    subgraph cluster_agent {
-        label="Agentic Intelligence"
-        agent
-    }
+
+        subgraph cluster_data {
+            label = "Extract"
+            marketplace iceberg horizon
+        }
+        
+        subgraph cluster_exploration {
+            label="Explore"
+             warehouse explore
+        }
+        
+        subgraph cluster_context {
+            label="Business Logic Context"
+            analyst
+        }
+        
+        subgraph cluster_agent {
+            label="Agentic Intelligence"
+            agent
+        }
+        
+        subgraph cluster_end_user {
+            label="Enterprise AI Apps"
+            gemini
+            cowork
+            coco
+        }
+
+
 
 
     marketplace [label="Snowflake Marketplace" shape=record]
     horizon [shape=record label="Federated Catalogs | {Snowflake \n Horizon | Lakehouse \n Runtime Catalog}"]
     iceberg [label="Customer GCS Iceberg \n - Parquet Data Files \n - Metadata json", shape=cylinder  fillcolor="#ddffdd"]
-    warehouse [label="Adaptive Warehouse \n (on Google Axion)"]
+    warehouse [label="Adaptive Warehouse"]
     explore [label="Data Exploration | {Snowsight | Notebook}" shape=record]
-    analyst [label="Cortex Analyst\n(Semantic Context)"]
-    agent   [label="Cortex Agents \n (Powered by Gemini)"]
+    analyst [label="Cortex Analyst"]
+    agent   [label="Cortex Agents"]
     cowork  [label="CoWork \n (Insights and Reports)"]
     gemini  [label="Gemini Enterprise \n (Corporate AI Hub)"  fillcolor="#ddffdd"]
     coco    [label="CoCo \n (Agentic Assistent)"]
@@ -58,12 +69,6 @@ digraph cortex_stack {
     agent -> gemini [label="MCP"]
     agent -> {cowork coco}
     
-    subgraph cluster_end_user {
-        label="Enterprise AI Apps"
-        gemini
-        cowork
-        coco
-    }
 }
 ```
 

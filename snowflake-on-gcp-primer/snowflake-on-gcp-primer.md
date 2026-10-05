@@ -1,7 +1,7 @@
 # Snowflake on Google Cloud
 
 - **Audience:** Executives, Managers, and Architects across AI/ML, Data Engineering, BI, and Data Science  
-- **Last Updated:** April 2026
+- **Last Updated:** September 2026
 - **Contact:**
     - sasha.wright-neville@snowflake.com (Partnership)
     - britny.holloway@snowflake.com (Sales)
@@ -54,18 +54,18 @@ The table tracks major GCP-specific feature availability. All dates are *estimat
 | Feature | Priority | Status / ETA |
 |---|---|---|
 | **Cortex on GCP** (cross-region) | ✅ Done | GA |
-| **Gemini in Cortex** (AISQL, Analyst, SI) | ✅ Done | Public Preview |
-| **Iceberg: Snowflake Managed Catalog** | ✅ Done | Public Preview | 
-| **Iceberg: BigLake Metastore Integration** | ✅ Done | Private Preview | 
-| **BigLake: Catalog Federation** | ✅ Done | Private Preview | 
-| **Notebooks vNext in Workspaces** | ✅ Done | Private Preview |
+| **Gemini in Cortex** (AISQL, Analyst, SI) | ✅ Done | ⚠️ GA or late PuPr |
+| **Iceberg: Snowflake Managed Catalog** | ✅ Done | ⚠️ Expected GA | 
+| **Iceberg: BigLake Metastore Integration** | ✅ Done | ⚠️ Expected Public Preview | 
+| **BigLake: Catalog Federation** | ✅ Done | ⚠️ Expected Public Preview | 
+| **Notebooks vNext in Workspaces** | ✅ Done | ⚠️ Expected Public Preview |
 | **Expansion (APAC)** | ✅ Done | Launched |
-| **OpenFlow** (Managed) | ✅ Done | Private Preview |
-| **Cortex on GCP** (in-region) | 🟠 High | Q2 FY27 |
-| **Snowflake Postgres** | 🟠 High | Q3 FY27 |
+| **OpenFlow** (Managed) | ✅ Done | ⚠️ Expected Public Preview |
+| **Cortex on GCP** (in-region) | 🟠 High | ⚠️ Q2 FY27 ETA now past — verify |
+| **Snowflake Postgres** | 🟠 High | 🟠 Q3 FY27 — in flight |
 | **FedRAMP on GCP** | 🟡 Medium | TBD |
-| **OpenFlow** (BYOC) | 🟡 Medium | Q3 FY27 |
-| **Hybrid Tables** | 🔵 Low | Q4 FY27 |
+| **OpenFlow** (BYOC) | 🟡 Medium | 🟡 Q3 FY27 — in flight |
+| **Hybrid Tables** | 🔵 Low | 🔵 Q4 FY27 — deprioritized |
 
 </div>
 
@@ -125,6 +125,10 @@ Snowflakes support internally and externally managed iceberg tables:
 - **Snowflake-Managed Iceberg** — Horizon is IRC-compatible and no additional catalog needed; External engines use IRC to read/write; 
 - **BigLake-Managed Iceberg** — Google BigLake owns the catalog; Snowflake reads/writes through IRC.
 
+Two points worth emphasizing with customers:
+- **No Snowflake credentials required** for GCP-side readers — engines read Parquet from GCS directly and resolve metadata through the Horizon IRC REST API. Validated with PySpark 4 / Iceberg Runtime 1.10.1 (see `snowflake-managed-iceberg-on-gcp/`).
+- **Iceberg V3 supports VARIANT**, so semi-structured JSON/nested data can be shared in open format rather than flattened first.
+
 
 
 ### B — Agentic AI: Cortex Agent + Gemini
@@ -132,6 +136,11 @@ Snowflakes support internally and externally managed iceberg tables:
 - **Gemini is the default LLM on GCP** for Cortex Agents, Cortex Analyst, AI SQL functions, and Snowflake Intelligence
 - Integrates with **Gemini Enterprise** and **Vertex AI Agent Development Kit (ADK)** via agentic REST calls.
 - Customers can build multi-agent architectures where Vertex AI agents delegate data retrieval to Cortex Agent
+
+**Implementation notes from the POC** (`gemini-enterprise-calls-cortex/via-REST/`):
+- Gemini Enterprise **Custom Actions were deprecated in March 2026** — Vertex AI Agent Engine + ADK is the supported integration path.
+- Two LLM hops (Gemini + Cortex) add **~20s latency** — acceptable for conversational data Q&A, not for interactive dashboards.
+- Agent Engine egress IPs are non-standard (`136.124.x.x`) and **must be whitelisted** in the Snowflake network policy.
 
 
 
@@ -257,6 +266,7 @@ Snowflake is fully managed AI data cloud with built-in security and governance t
 
 ## References
 
+- [GCP + Snowflake Better Together — Status Update](./gcp-snowflake-better-together-status.md) — exec brief, AI and Iceberg focus
 - [Partnership Page](https://snowflake.seismic.com/Link/Content/DCfWjJDRB9dg9GmPDm2WVFcmd9F3)
 - [GCP Dashboard](https://go/gcp-dashboard)
 - [Feature Parity Tracker (Spreadsheet)](https://docs.google.com/spreadsheets/d/1p22ahwnb3h1NEaCG77tYMuVN0Ob59eY9cqZMUe2gOQQ/edit?usp=sharing)
